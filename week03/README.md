@@ -664,6 +664,192 @@ Could be used to trigger scheduled processing pipelines.
 
 \---
 
+# Day 4 - Error Handling and Logging
+
+## Objective
+
+The objective of this session was to improve the reliability of Python applications by implementing proper error handling and structured logging.
+
+The focus was on ensuring that scripts continue operating gracefully when errors occur while providing a detailed audit trail of processing activities.
+
+---
+
+## Concepts Learned
+
+### try
+
+The try block contains code that may raise an exception.
+
+Example:
+
+```python
+try:
+    amount = float(user_input)
+```
+
+---
+
+### except
+
+The except block handles expected errors.
+
+Example:
+
+```python
+except ValueError:
+    print("Invalid amount")
+```
+
+---
+
+### else
+
+The else block runs only when no exceptions occur.
+
+Example:
+
+```python
+else:
+    print("Processing successful")
+```
+
+---
+
+### finally
+
+The finally block executes regardless of whether an exception occurred.
+
+Typical uses:
+
+- Cleanup operations
+- Releasing resources
+- Closing connections
+
+---
+
+## Exception Types Studied
+
+### FileNotFoundError
+
+Occurs when a file cannot be found.
+
+### PermissionError
+
+Occurs when access is denied.
+
+### ValueError
+
+Occurs when data cannot be converted correctly.
+
+Example:
+
+```python
+int("abc")
+```
+
+### KeyError
+
+Occurs when a dictionary key does not exist.
+
+### TypeError
+
+Occurs when an operation is performed on an invalid data type.
+
+### UnicodeDecodeError
+
+Occurs when file encoding issues are encountered.
+
+---
+
+## Logging
+
+The logging module provides a structured method of recording script activity.
+
+### Log Levels
+
+#### DEBUG
+
+Detailed troubleshooting information.
+
+#### INFO
+
+Normal application events.
+
+#### WARNING
+
+Recoverable problems.
+
+#### ERROR
+
+Failures that prevent part of a process from completing.
+
+#### CRITICAL
+
+Failures that prevent the application from continuing.
+
+---
+
+## Portfolio Deliverables
+
+### clean_transactions_v2.py
+
+Enhanced transaction processing pipeline with:
+
+- Validation
+- Error handling
+- Structured logging
+- Safer file processing
+
+### logs/pipeline.log
+
+Generated audit trail containing:
+
+- Processing start time
+- Processing completion time
+- Record counts
+- Warnings
+- Errors
+- Operational messages
+
+---
+
+## Business Value
+
+Production applications must be able to handle bad data gracefully.
+
+Rather than crashing when an error occurs, applications should:
+
+- Identify the problem
+- Log the issue
+- Continue processing whenever possible
+
+This approach improves reliability and supportability.
+
+---
+
+## AWS Connection
+
+Logging is one of the most important aspects of operating cloud applications.
+
+The concepts learned in this exercise connect directly to:
+
+- AWS Lambda
+- Amazon CloudWatch Logs
+- CloudWatch Metrics
+- Monitoring and observability
+
+A Lambda function performing transaction processing would produce logs similar to those generated in this exercise.
+
+---
+
+## What I Found Interesting
+
+One of the biggest lessons from this exercise was realising that successful software is not only software that works.
+
+Reliable software must also handle errors, provide visibility into what happened and support troubleshooting when issues occur.
+
+Adding logging transformed the transaction script from a simple processing script into a more production-ready solution.
+
 
 
 \## Key Skills Developed

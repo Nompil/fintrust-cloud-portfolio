@@ -1,992 +1,532 @@
-\# Week 1 - SQL Foundations
+# Week 1 - SQL Foundations and Programme Foundation
 
+## Objective
 
+The objective of Week 1 was to understand the structure of the Cloud to Solutions Accelerator programme, set up my professional GitHub portfolio, and build a strong foundation in relational databases and SQL using the FinTrust banking dataset.
 
-\## Objective
+This week introduced the technologies, concepts and business scenario that will be used throughout the programme while also developing my first SQL skills.
 
+## Programme Foundation
 
+Week 1 began with an overview of the 16-week Cloud to Solutions Accelerator programme and the journey toward AWS Certified Solutions Architect Associate (SAA-C03).
 
-The objective of Week 1 was to build a foundation in relational databases and SQL using the FinTrust banking dataset.
+The programme is built around four learning streams:
 
+- Cloud and AWS
+- SQL and Data Engineering
+- Python Programming
+- Solutions Architecture
 
+Rather than treating these as separate subjects, the programme combines them to build practical cloud-native solutions.
 
-Throughout the week, I learned how data is structured, stored and queried within a relational database. I also learned how to create database tables, establish relationships between them, insert data, and retrieve information using SQL.
+### My Learning Goal
 
+Through this programme I aim to:
 
+- Build cloud engineering skills
+- Develop practical AWS knowledge
+- Improve SQL and Python skills
+- Design and build the FinTrust solution
+- Prepare for the AWS SAA-C03 certification
 
-The concepts covered this week provide the foundation for all future database work within the FinTrust project.
+## The Four Learning Streams
 
+### Cloud and AWS
 
+This stream focuses on AWS services relevant to the Solutions Architect Associate certification.
 
-\---
+Topics include:
 
+- Compute
+- Storage
+- Databases
+- Networking
+- Security
+- High Availability
+- Serverless Architecture
 
+### SQL and Data Engineering
 
-\## Relational Databases
+This stream focuses on working with structured data using relational databases and SQL.
 
+Topics include:
 
+- Database design
+- Queries
+- Reporting
+- Aggregations
+- Data analysis
 
-A relational database stores information in tables made up of rows and columns.
+### Python Programming
 
+This stream develops programming skills used in automation, cloud computing and data processing.
 
+Topics include:
 
-Each table represents a specific business entity.
+- Variables
+- Functions
+- Modules
+- File handling
+- Data pipelines
+- AWS Lambda development
 
+### Solutions Architecture
 
+This stream focuses on designing systems rather than only using services.
 
-Examples:
+Topics include:
 
+- Architectural decision making
+- Security
+- Scalability
+- Reliability
+- Performance optimisation
+- Cost optimisation
 
+## AWS SAA-C03 Certification Target
 
-\- Customers
+The AWS Certified Solutions Architect Associate certification is the primary certification target of this programme.
 
-\- Accounts
+The exam focuses on four domains:
 
-\- Transactions
+### Design Resilient Architectures
 
+Weighting: 30%
 
+Focus areas:
 
-The relationships between these entities are what make the database relational.
+- High Availability
+- Fault Tolerance
+- Disaster Recovery
+- Business Continuity
 
+### Design High-Performing Architectures
 
+Weighting: 28%
 
-Example:
+Focus areas:
 
+- Databases
+- Storage
+- Compute performance
+- Networking
 
+### Design Secure Architectures
 
-```text
+Weighting: 24%
 
-Customers → Accounts → Transactions
+Focus areas:
 
-```
+- IAM
+- Encryption
+- Access Management
+- Security Controls
 
+### Design Cost-Optimised Architectures
 
+Weighting: 18%
 
-This means:
+Focus areas:
 
+- Resource optimisation
+- Pricing models
+- Rightsizing
+- Cost management
 
+Understanding these domains helped me understand how each topic contributes toward certification readiness.
 
-\- One customer can have multiple accounts.
+## The FinTrust Bank Scenario
 
-\- One account can have multiple transactions.
+All practical work throughout the programme is based on the FinTrust Bank case study.
 
-\- Every transaction belongs to an account.
+FinTrust is a South African digital bank serving approximately 2.3 million customers and expanding rapidly.
 
-\- Every account belongs to a customer.
+The bank faces several challenges:
 
+- Rapid customer growth
+- POPIA compliance requirements
+- Fraud detection requirements
+- High transaction latency
+- Capacity limitations in its on-premises environment
 
+The objective of the programme is to design and progressively build a cloud-native transaction intelligence platform on AWS.
 
-\### Why This Matters
+Each week contributes another component of the final solution.
 
+## Core FinTrust Data Entities
 
-
-Relational databases prevent unnecessary duplication of information and help ensure data remains accurate and consistent.
-
-
-
-In a banking environment, these relationships are critical because customer, account and transaction information must always remain reliable.
-
-
-
-\---
-
-
-
-\## SQL Fundamentals
-
-
-
-SQL stands for Structured Query Language.
-
-
-
-SQL is used to interact with relational databases.
-
-
-
-The main SQL operations are:
-
-
-
-\### SELECT
-
-
-
-Retrieves data from a database.
-
-
-
-Example:
-
-
-
-```sql
-
-SELECT first\_name, last\_name
-
-FROM customers;
-
-```
-
-
-
-\### INSERT
-
-
-
-Adds new records.
-
-
-
-Example:
-
-
-
-```sql
-
-INSERT INTO customers
-
-(first\_name, last\_name)
-
-VALUES
-
-('Thabo', 'Nkosi');
-
-```
-
-
-
-\### UPDATE
-
-
-
-Modifies existing records.
-
-
-
-Example:
-
-
-
-```sql
-
-UPDATE customers
-
-SET province = 'Gauteng'
-
-WHERE customer\_id = 1;
-
-```
-
-
-
-\### DELETE
-
-
-
-Removes records.
-
-
-
-Example:
-
-
-
-```sql
-
-DELETE FROM customers
-
-WHERE customer\_id = 1;
-
-```
-
-
-
-\---
-
-
-
-\## Data Types
-
-
-
-I learned that every column must have a data type.
-
-
-
-Common data types used during the week:
-
-
-
-\### VARCHAR
-
-
-
-Stores text.
-
-
-
-Examples:
-
-
-
-\- First names
-
-\- Last names
-
-\- Emails
-
-
-
-\### INT
-
-
-
-Stores whole numbers.
-
-
-
-Examples:
-
-
-
-\- Customer IDs
-
-\- Account IDs
-
-
-
-\### DECIMAL
-
-
-
-Stores exact financial values.
-
-
-
-Example:
-
-
-
-```sql
-
-DECIMAL(15,2)
-
-```
-
-
-
-Used for:
-
-
-
-\- Account balances
-
-\- Transaction amounts
-
-
-
-Important lesson:
-
-
-
-Financial values should be stored using DECIMAL rather than FLOAT because DECIMAL maintains accuracy.
-
-
-
-\### DATETIME
-
-
-
-Stores dates and times.
-
-
-
-Examples:
-
-
-
-\- Transaction dates
-
-\- Record creation dates
-
-
-
-\### ENUM
-
-
-
-Restricts values to predefined options.
-
-
-
-Example:
-
-
-
-```sql
-
-ENUM('CHEQUE','SAVINGS','CREDIT','BUSINESS')
-
-```
-
-
-
-This helps maintain data quality.
-
-
-
-\---
-
-
-
-\## Database Constraints
-
-
-
-Constraints help protect data integrity.
-
-
-
-\### PRIMARY KEY
-
-
-
-Uniquely identifies every record.
-
-
-
-Example:
-
-
-
-```text
-
-customer\_id
-
-```
-
-
-
-\### FOREIGN KEY
-
-
-
-Creates relationships between tables.
-
-
-
-Example:
-
-
-
-```text
-
-accounts.customer\_id
-
-→ customers.customer\_id
-
-```
-
-
-
-\### NOT NULL
-
-
-
-Prevents missing values.
-
-
-
-\### UNIQUE
-
-
-
-Prevents duplicate entries.
-
-
-
-Example:
-
-
-
-```text
-
-email address
-
-```
-
-
-
-\### AUTO\_INCREMENT
-
-
-
-Automatically generates sequential IDs.
-
-
-
-\---
-
-
-
-\# Portfolio Deliverables
-
-
-
-\## day2\_explore.sql
-
-
-
-\### Objective
-
-
-
-Learn how to retrieve and explore data from the FinTrust database using basic SQL queries.
-
-
-
-\### Tasks Completed
-
-
-
-1\. Displayed all customer records using SELECT \*
-
-2\. Retrieved specific columns from the customers table
-
-3\. Used column aliases to improve readability
-
-4\. Retrieved unique provinces using DISTINCT
-
-5\. Limited query results using LIMIT
-
-6\. Counted records using COUNT(\*)
-
-7\. Created calculated columns for projected account balances
-
-
-
-\### Key Skills Practised
-
-
-
-\- SELECT
-
-\- DISTINCT
-
-\- LIMIT
-
-\- COUNT
-
-\- Column aliases
-
-\- Calculated columns
-
-
-
-\### Important Examples
-
-
-
-Select specific columns:
-
-
-
-```sql
-
-SELECT first\_name, last\_name, province
-
-FROM customers;
-
-```
-
-
-
-Retrieve unique provinces:
-
-
-
-```sql
-
-SELECT DISTINCT province
-
-FROM customers;
-
-```
-
-
-
-Count customer records:
-
-
-
-```sql
-
-SELECT COUNT(\*) AS customer\_count
-
-FROM customers\*
-
-```
-
-
-
-Calculate projected balances\*
-
-
-
-```sql
-
-SELECT
-
-&#x20;   account\_number\*
-
-&#x20;   balance,
-
-&#x20;   balance \* 1.10 A\* projected\_balance
-
-FROM accounts;
-
-\*``
-
-
-
-\### Business Value
-
-
-
-These quer\*es form the foundation of customer\*reporting, dashboard creation and \*usiness intelligence analysis.
-
-
-
-\--\*
-
-
-
-\## day3\_fintrust\_schema.sql
-
-
-
-\###\*Objective
-
-
-
-Design and build the Fi\*Trust database schema from scratch\*
-
-
-
-\### Tasks Completed
-
-
-
-1\. Created \*he fintrust\_db database
-
-2\. Created\*the customers table
-
-3\. Created the\*accounts table
-
-4\. Created the tran\*actions table
-
-5\. Added primary key\*
-
-6\. Added foreign keys
-
-7\. Inserted\*customer records
-
-8\. Inserted accou\*t records
-
-9\. Inserted transaction \*ecords
-
-10\. Verified inserted data
-
-\*1. Validated record counts
-
-
-
-\### Ke\* Skills Practised
-
-
-
-\- CREATE DATABA\*E
-
-\- CREATE TABLE
-
-\- INSERT INTO
-
-\- P\*IMARY KEY
-
-\- FOREIGN KEY
-
-\- Data typ\*s
-
-\- Constraints
-
-
-
-\### Tables Create\*
-
-
-
-\#### customers
-
-
-
-Stores customer \*nformation.
-
-
+### Customers
 
 Key fields:
 
+- customer_id
+- first_name
+- last_name
+- id_number
+- email
+- phone
+- province
+- created_at
 
+### Accounts
 
-\- custom\*r\_id
+Key fields:
 
-\- first\_name
+- account_id
+- customer_id
+- account_type
+- account_number
+- balance
+- status
 
-\- last\_name
+### Transactions
 
-\- em\*il
+Key fields:
 
-\- province
+- transaction_id
+- account_id
+- transaction_type
+- amount
+- description
+- merchant_category
+- transaction_date
+- reference_number
 
+These entities form the foundation of the database work completed during Week 1.
 
+## GitHub Portfolio
 
-\#### accounts
+One of the most important lessons from Day 1 was understanding that GitHub is not simply a place to store files.
 
+The portfolio repository acts as:
 
+- A learning journal
+- A professional portfolio
+- Evidence of technical skills
+- A study resource
+- A record of growth throughout the programme
 
-Stor\*s banking account information.
-
-
-
-Ke\* fields:
-
-
-
-\- account\_id
-
-\- customer\_\*d
-
-\- account\_type
-
-\- account\_number
-
-\* balance
-
-
-
-\#### transactions
-
-
-
-Store\* transaction records.
-
-
-
-Key fields:\*
-
-\- transaction\_id
-
-\- account\_id
-
-\- t\*ansaction\_type
-
-\- amount
-
-\- merchant\*category
-
-
-
-\### Database Relationshi\*s
-
-
+Repository structure:
 
 ```text
-
-customers
-
-&#x20;   │
-
-&#x20;   └──\*customer\_id
-
-&#x20;          │
-
-&#x20;        \* ▼
-
-accounts
-
-&#x20;   │
-
-&#x20;   └── account\_\*d
-
-&#x20;          │
-
-&#x20;          ▼
-
-transa\*tions
-
+fintrust-cloud-portfolio
+│
+├── README.md
+├── week01
+├── week02
+├── week03
+└── future weeks
 ```
 
+The repository will continue to grow throughout the programme and eventually contain the FinTrust capstone solution.
 
+## Relational Databases
 
-\### Business Value
+A relational database stores information in rows and columns organised into tables.
 
+Each table represents a business entity.
 
+Examples:
 
-Thi\* schema represents a simplified ve\*sion of a banking system where cus\*omers own accounts and accounts co\*tain transactions.
+- Customers
+- Accounts
+- Transactions
 
+The relationships between these entities are what make the database relational.
 
+Example:
 
-\---
-
-
-
-\## day4\_w\*ere\_challenges.sql
-
-
-
-\### Objective
-
-\*Use filtering techniques to answer\*business questions using SQL.
-
-
-
-\###\*Tasks Completed
-
-
-
-1\. Queried custom\*rs from specific provinces
-
-2\. Filt\*red accounts by balance thresholds\*3. Found records using LIKE
-
-4\. Use\* IN to match multiple values
-
-5\. Us\*d BETWEEN for ranges
-
-6\. Used IS NU\*L and IS NOT NULL
-
-7\. Combined cond\*tions using AND
-
-8\. Combined condit\*ons using OR
-
-9\. Used NOT to exclud\* records
-
-10\. Sorted results using \*RDER BY
-
-11\. Built business-focused\*reporting queries
-
-
-
-\### Key Skills \*ractised
-
-
-
-\- WHERE
-
-\- LIKE
-
-\- IN
-
-\- BE\*WEEN
-
-\- IS NULL
-
-\- IS NOT NULL
-
-\- AND\*- OR
-
-\- NOT
-
-\- ORDER BY
-
-
-
-\### Importa\*t Examples
-
-
-
-Find customers from Ga\*teng:
-
-
-
-```sql
-
-SELECT \*
-
-FROM custom\*rs
-
-WHERE province = 'Gauteng';
-
-```\*
-
-Find Gmail customers:
-
-
-
-```sql
-
-SEL\*CT \*
-
-FROM customers
-
-WHERE email LI\*E '%gmail%';
-
+```text
+Customers
+    ↓
+Accounts
+    ↓
+Transactions
 ```
 
+This means:
 
+- One customer can own multiple accounts.
+- One account can contain multiple transactions.
+- Every transaction belongs to an account.
+- Every account belongs to a customer.
 
-Find balances wi\*hin a range:
+### Why This Matters
 
+Relational databases reduce duplication, improve consistency and support accurate reporting.
 
+These relationships are critical within banking environments where data integrity is essential.
 
-```sql
+## SQL Fundamentals
 
-SELECT \*
+SQL stands for Structured Query Language.
 
-FROM\*accounts
+SQL is used to:
 
-WHERE balance BETWEEN 100\* AND 50000;
+- Retrieve data
+- Insert data
+- Update data
+- Delete data
+- Create databases
+- Create tables
+- Generate reports
 
-```
+### SELECT
 
+Used to retrieve information.
 
-
-Find records with\*missing values:
-
-
-
-```sql
-
-SELECT \*
-
-F\*OM transactions
-
-WHERE merchant\_cat\*gory IS NULL;
-
-```
-
-
-
-Combine multipl\* conditions:
-
-
+Example:
 
 ```sql
-
-SELECT \*
-
-FROM\*accounts
-
-WHERE account\_type = 'SAV\*NGS'
-
-AND balance > 5000;
-
+SELECT first_name, last_name
+FROM customers;
 ```
 
+### INSERT
 
+Used to add records.
 
-\### \*usiness Value
+Example:
 
+```sql
+INSERT INTO customers
+(first_name, last_name)
+VALUES
+('Nompilo', 'Mchunu');
+```
 
+### UPDATE
 
-Filtering data is o\*e of the most common activities in\*reporting and analytics.
+Used to modify existing records.
 
+Example:
 
+```sql
+UPDATE customers
+SET province = 'KwaZulu-Natal'
+WHERE customer_id = 1;
+```
 
-These qu\*ries form the foundation of:
+### DELETE
 
+Used to remove records.
 
+Example:
 
-\- Cu\*tomer segmentation
+```sql
+DELETE FROM customers
+WHERE customer_id = 1;
+```
 
-\- Fraud detecti\*n
+## Database Design Concepts
 
-\- Financial reporting
+### Primary Key
 
-\- Business\*intelligence dashboards
+A unique identifier for each record.
 
+Example:
 
+```text
+customer_id
+```
 
-\---
+### Foreign Key
 
+Creates relationships between tables.
 
+Example:
 
-\## A\*S Connection
+```text
+accounts.customer_id
+→ customers.customer_id
+```
 
+### NOT NULL
 
+Prevents missing values.
 
-The concepts covered\*this week connect directly to Amaz\*n RDS.
+### UNIQUE
 
+Prevents duplicate values.
 
+### AUTO_INCREMENT
 
-Amazon RDS is AWS's manage\* relational database service.
+Automatically generates unique identifiers.
 
+## Data Types Learned
 
+### VARCHAR
 
-The\*FinTrust database created during t\*is week could be hosted using:
+Stores text.
 
+Examples:
 
+- Names
+- Email addresses
+- Provinces
 
-\- \*mazon RDS MySQL
+### INT
 
-\- Amazon RDS Postg\*eSQL
+Stores whole numbers.
 
-\- Amazon Aurora
+Examples:
 
+- Customer IDs
+- Account IDs
 
+### DECIMAL
 
-Understandin\* database design and SQL querying \*ill be important when working with\*cloud-hosted databases later in th\* programme.
+Stores precise financial values.
 
+Examples:
 
+- Account balances
+- Transaction amounts
 
-\---
+Important lesson:
 
+Financial values should always use DECIMAL instead of FLOAT because DECIMAL provides accurate precision.
 
+### DATETIME
 
-\## Key Learning \*utcomes
+Stores dates and timestamps.
 
+### ENUM
 
+Restricts a field to predefined values.
 
-By the end of Week 1 I wa\* able to:
+Example:
 
+```sql
+ENUM('CHEQUE','SAVINGS','CREDIT')
+```
 
+## Portfolio Deliverables
 
-\- Understand relational\*database concepts
+### day2_explore.sql
 
-\- Create databases and tables
+Objective:
 
-\- Define primary and foreign keys
+Learn how to retrieve and explore data using SQL queries.
 
-\- Insert records into tables
+Tasks Completed:
 
-\- Query data using SELECT statements
+- Displayed customer records using SELECT
+- Retrieved specific columns
+- Used column aliases
+- Retrieved unique values using DISTINCT
+- Limited query results using LIMIT
+- Counted records using COUNT(*)
+- Created calculated columns
 
-\- Filter data using WHERE clauses
+Skills Practised:
 
-\- Build relationships between tables
+- SELECT
+- DISTINCT
+- LIMIT
+- COUNT
+- Column aliases
+- Calculated fields
 
-\- Understand how structured data supports banking systems
+Business Values
 
+These queries form the foundation of reporting and analytics used throughout FinTrust.
 
+### day3_fintrust_schema.sql
 
-\---
+Objective:
 
+Design and create the FinTrust database schema.
 
+Tasks Completed:
 
-\## Reflection
+- Created the database
+- Created customers table
+- Created accounts table
+- Created transactions table
+- Defined primary keys
+- Defined foreign keys
+-*Inserted sample records
+- Verified table contents
+- Verified record counts
 
+Skills Practised:
 
+- CREATE TATABASE
+- CREATE TABLE
+- INSERT INTO
+- PRIMARY KEY
+- FOREIGN KEY
+- Data types
+- Constraints
 
-This week taught me that databases are much more than collections of tables.
+Business Value:
 
+This schema models a simplified banking environment where customers own accounts and accounts contain transactions.
 
+### day4_where_challenges.sql
 
-A well-designed database creates meaningful relationships between business entities and ensures data remains accurate, consistent and useful.
+Objective:
 
+Answer business questions using SQL filtering techniques.
 
+Tasks Completed:
 
-The most valuable lesson for me was understanding how customers, accounts and transactions connect together to form a complete banking system.
+- Queried customers from specific provinces
+- Filtered accounts by balance thresholds
+- Used LIKE for pattern matching
+- Used IN to filter multiple values
+- Used BETWEEN for ranges
+- Used IS NULL and IS NOT NULL
+- Combined conditions using AND and OR
+- Excluded data using NOT
+- Sorted results using ORDER BY
 
+Skills Practised:
 
+- WHERE
+- LIKE
+- IN
+- BETWEEN
+- IS NULL
+- IS NOT NULL
+- AND
+- OR
+- NOT
+- ORDER BY
 
-The SQL skills developed this week provide the foundation for future FinTrust reporting, analytics and cloud database solutions.
+Business Value:
 
+Filtering data is the foundation of business reporting, customer segmentation, fraud detection and analytics.
+
+## AWS Connection
+
+The concepts covered during Week 1 connect directly to Amazon RDS and Amazon Aurora.
+
+The FinTrust schema created this week represents the type of relational database that could eventually be deployed on AWS.
+
+Understanding relational database design is important because many cloud applications rely on structured and well-designed databases.
+
+## Key Learning Outcomes
+
+By the end of Week 1 I was able to:
+
+- Understand the structure of the programme
+- Explain the FinTrust case study
+- Understand the AWS SAA-C03 certification target
+- Create and manage a GitHub portfolio
+- Understand relational database concepts
+- Create databases and tables
+- Define primary and foreign keys
+- Insert records
+- Query information using SQL
+- Filter information using WHERE clauses
+- Understand how structured data supports banking systems
+
+## Week 1 Reflection
+
+Week 1 provided a clear understanding of where the programme is heading and how SQL, Python, AWS and Solutions Architecture connect together.
+
+The most valuable lesson was understanding that the technical skills I am learning are not isolated topics. They are all part of building the FinTrust cloud solution while preparing for the AWS Solutions Architect Associate certification.
+
+I also learned that a GitHub repository is more than a place to store files. It serves as a professional portfolio, a study guide and a record of my learning journey throughout the programme.

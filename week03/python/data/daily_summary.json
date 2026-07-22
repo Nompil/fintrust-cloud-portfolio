@@ -1,7 +1,9 @@
 {
+  "run_timestamp": "2026-07-22T12:19:41.737999",
   "total_transactions": 5,
   "total_deposits": 2,
   "total_withdrawals": 2,
   "sum_deposits": 17000.0,
-  "sum_withdrawals": -349.5
+  "sum_withdrawals": -349.5,
+  "skipped_rows": 0
 }

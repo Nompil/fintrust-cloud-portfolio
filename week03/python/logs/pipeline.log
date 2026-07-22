@@ -1,0 +1,7 @@
+2026-07-22 12:19:41 INFO     === FinTrust Transaction Pipeline Starting ===
+2026-07-22 12:19:41 INFO     Processed 5 rows, skipped 0
+2026-07-22 12:19:41 INFO     Clean CSV written: data\clean_transactions.csv
+2026-07-22 12:19:41 INFO     Summary JSON written: data\daily_summary.json
+2026-07-22 12:19:41 INFO     Deposits: 2 | Withdrawals: 2
+2026-07-22 12:19:41 INFO     Output files generated successfully
+2026-07-22 12:19:41 INFO     === Pipeline Complete ===
