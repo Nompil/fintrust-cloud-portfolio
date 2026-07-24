@@ -6,7 +6,7 @@ Week 1  ✅ Complete
 
 Week 2  ✅ Complete
 
-Week 3  🔄 Day 4 Complete, Day 5 Outstanding
+Week 3  ✅ Complete
 
 Week 4  ⬜ Not Started
 
