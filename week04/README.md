@@ -130,3 +130,47 @@ Debugging skills are essential for production banking applications because not a
 
 The same debugging techniques are used when troubleshooting Lambda functions, EC2 applications, API integrations and database transactions in AWS environments.
 
+
+
+\## Day 3 – CSV to SQLite to Dashboard
+
+
+
+\### Deliverables
+
+
+
+\- transactions.csv
+
+\- pipeline.py
+
+\- daily\_report.txt
+
+\- reflection.md
+
+
+
+\### Concepts Learned
+
+
+
+\- CSV validation
+
+\- SQLite databases
+
+\- Parameterized SQL queries
+
+\- ETL pipelines
+
+\- Idempotent data loading
+
+\- Reporting and dashboards
+
+
+
+\### Business Value
+
+
+
+The pipeline simulates a nightly transaction-processing workflow where data is imported, validated, stored and reported. This pattern forms the foundation of analytics and fraud-monitoring systems.
+
