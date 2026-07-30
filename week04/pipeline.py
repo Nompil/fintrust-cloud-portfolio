@@ -1,5 +1,5 @@
 """
-FinTrust CSV to SQLite Pipeline
+FinTrust CSV to SQLite Dashboard Pipeline
 """
 
 import csv
@@ -9,13 +9,13 @@ from pathlib import Path
 
 CSV_FILE = Path("week04/transactions.csv")
 DB_FILE = Path("week04/fintrust_analytics.db")
+REPORT_FILE = Path("week04/daily_report.txt")
 
 VALID_TYPES = {"TRANSFER", "DEPOSIT", "WITHDRAWAL"}
 VALID_STATUSES = {"COMPLETED", "FAILED", "PENDING"}
 
 
 def validate_row(row):
-    """Return (True, None) if valid, otherwise (False, reason)."""
 
     if not row["account_from"].strip():
         return False, "missing account_from"
@@ -38,7 +38,6 @@ def validate_row(row):
 
 
 def load_csv(filepath):
-    """Read CSV and return valid and invalid rows."""
 
     valid = []
     invalid = []
@@ -65,7 +64,6 @@ def load_csv(filepath):
 
 
 def setup_database(db_path):
-    """Create transactions table if it doesn't exist."""
 
     conn = sqlite3.connect(db_path)
 
@@ -89,7 +87,6 @@ def setup_database(db_path):
 
 
 def insert_transactions(conn, valid_rows):
-    """Insert valid rows and skip duplicates."""
 
     loaded_at = datetime.now().isoformat(timespec="seconds")
 
@@ -102,8 +99,7 @@ def insert_transactions(conn, valid_rows):
 
             conn.execute(
                 """
-                INSERT INTO transactions
-                (
+                INSERT INTO transactions (
                     transaction_id,
                     account_from,
                     account_to,
@@ -139,6 +135,124 @@ def insert_transactions(conn, valid_rows):
     return inserted, skipped
 
 
+def generate_report(conn):
+
+    lines = []
+
+    lines.append("=" * 60)
+    lines.append("FINTRUST DAILY TRANSACTION REPORT")
+    lines.append(
+        f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+    lines.append("=" * 60)
+
+    # Summary
+    summary = conn.execute("""
+        SELECT
+            COUNT(*),
+            ROUND(SUM(amount), 2),
+            ROUND(AVG(amount), 2),
+            ROUND(MIN(amount), 2),
+            ROUND(MAX(amount), 2)
+        FROM transactions
+    """).fetchone()
+
+    lines.append("")
+    lines.append("SUMMARY")
+    lines.append("-" * 40)
+
+    lines.append(f"Total transactions : {summary[0]}")
+    lines.append(f"Total volume       : ZAR {summary:,.2f}")
+    lines.append(f"Average amount     : ZAR {summary:,.2f}")
+
+    lines.append(
+        f"Min / Max          : "
+        f"ZAR {summary:,.2f} / "
+        f"ZAR {summary:,.2f}"
+    )
+
+    # Breakdown by Type
+    lines.append("")
+    lines.append("BREAKDOWN BY TYPE")
+    lines.append("-" * 40)
+
+    rows = conn.execute("""
+        SELECT
+            type,
+            COUNT(*),
+            ROUND(SUM(amount), 2)
+        FROM transactions
+        GROUP BY type
+        ORDER BY SUM(amount) DESC
+    """).fetchall()
+
+    for row in rows:
+        lines.append(
+            f"{row<12} "
+            f"{row>3} txns   "
+            f"ZAR {row>10,.2f}"
+        )
+
+    # Breakdown by Status
+    lines.append("")
+    lines.append("BREAKDOWN BY STATUS")
+    lines.append("-" * 40)
+
+    rows = conn.execute("""
+        SELECT
+            status,
+            COUNT(*),
+            ROUND(SUM(amount), 2)
+        FROM transactions
+        GROUP BY status
+        ORDER BY COUNT(*) DESC
+    """).fetchall()
+
+    for row in rows:
+        lines.append(
+            f"{row[0]:<12}           f"{row>3} txns   "
+            f"ZAR {row>10:,.2f}"
+        )
+
+    # Top 3 Largest Transactions
+    lines.append("")
+    lines.append("TOP 3 LARGEST TRANSACTIONS")
+    lines.append("-" * 40)
+
+    rows = conn.execute("""
+        SELECT
+            transaction_id,
+            account_from,
+            amount,
+            type,
+            status
+        FROM transactions
+        ORDER BY amount DESC
+        LIMIT 3
+    """).fetchall()
+
+    for i, row in enumerate(rows, start=1):
+        lines.append(
+            f"#{i} "
+            f"{row[0]} "
+            f"{row[1]} "
+            f"ZAR {row,.2f} "
+            f"[{row[3]} / {row[4]}]"
+        )
+
+    lines.append("")
+    lines.append("=" * 60)
+
+    report_text = "\n".join(lines)
+
+    REPORT_FILE.write_text(
+        report_text,
+        encoding="utf-8"
+    )
+
+    return report_text
+
+
 if __name__ == "__main__":
 
     print("=== Phase 1: Loading CSV ===")
@@ -154,10 +268,7 @@ if __name__ == "__main__":
 
         for entry in invalid_rows:
 
-            txn_id = entry["row"].get(
-                "transaction_id",
-                "UNKNOWN"
-            )
+            txn_id = entry["row"]["transaction_id"]
 
             print(
                 f"  {txn_id}: {entry['reason']}"
@@ -174,5 +285,13 @@ if __name__ == "__main__":
 
     print(f"Inserted: {inserted}")
     print(f"Skipped (duplicates): {skipped}")
+
+    print("\n=== Phase 3: Generating Report ===")
+
+    report = generate_report(conn)
+
+    print(report)
+
+    print(f"\nReport saved to: {REPORT_FILE}")
 
     conn.close()
