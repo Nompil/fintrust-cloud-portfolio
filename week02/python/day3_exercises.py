@@ -1,20 +1,18 @@
 """
 Week 2 Day 3
 Python Fundamentals Exercises
-FinTrust Banking Scenario
+FinTrust Bank
 """
 
 from decimal import Decimal
 
 
-# ==================================================
-# Exercise 1 - Account Formatter
-# ==================================================
+# =====================================
+# Exercise 1
+# Account Formatter
+# =====================================
 
 def format_account_summary(customer_name, account_type, balance):
-    """
-    Return a formatted customer account summary.
-    """
 
     d_balance = Decimal(str(balance))
 
@@ -26,31 +24,30 @@ def format_account_summary(customer_name, account_type, balance):
     )
 
 
-print("==== Exercise 1 ====")
+print("=== Exercise 1 ===")
+
 print(
     format_account_summary(
         "thabo nkosi",
         "savings",
-        52750.00
+        "52750.00"
     )
 )
+
 print()
 
 
-# ==================================================
-# Exercise 2 - Compound Interest Calculator
-# ==================================================
+# =====================================
+# Exercise 2
+# Compound Interest
+# =====================================
 
 def calculate_compound_interest(
-        principal,
-        annual_rate,
-        years,
-        n=12):
-    """
-    Calculate compound interest.
-
-    A = P(1 + r/n)^(nt)
-    """
+    principal,
+    annual_rate,
+    years,
+    n=12
+):
 
     p = float(principal)
 
@@ -64,7 +61,7 @@ def calculate_compound_interest(
     )
 
 
-print("==== Exercise 2 ====")
+print("=== Exercise 2 ===")
 
 principal = Decimal("50000.00")
 
@@ -79,12 +76,14 @@ print(
     f"R {amount:,.2f} "
     f"(interest earned: R {interest:,.2f})"
 )
+
 print()
 
 
-# ==================================================
-# Exercise 3 - Transaction Statistics
-# ==================================================
+# =====================================
+# Exercise 3
+# Transaction Statistics
+# =====================================
 
 transactions = [
     Decimal("250.00"),
@@ -107,13 +106,16 @@ largest = max(transactions)
 smallest = min(transactions)
 
 count_above_5000 = len(
-    [transaction for transaction in transactions
-     if transaction > Decimal("5000")]
+    [t for t in transactions if t > Decimal("5000")]
 )
 
-print("==== Exercise 3 ====")
+print("=== Exercise 3 ===")
+
 print(f"Total: R {total:,.2f}")
 print(f"Average: R {average:,.2f}")
 print(f"Largest: R {largest:,.2f}")
 print(f"Smallest: R {smallest:,.2f}")
-print(f"Transactions above R5000: {count_above_5000}")
+print(
+    f"Transactions above R5000: "
+    f"{count_above_5000}"
+)
