@@ -1,5 +1,10 @@
 """
 FinTrust CSV to SQLite Dashboard Pipeline
+
+This pipeline reads transaction data from a CSV file and validates each record before processing.
+Valid transactions are loaded into a SQLite database using parameterised SQL queries to prevent duplicates and ensure data integrity.
+The database is then queried to generate a daily financial report showing transaction summaries, status breakdowns, and the largest transactions.
+
 """
 
 import csv
