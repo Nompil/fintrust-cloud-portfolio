@@ -16,7 +16,6 @@ VALID_STATUSES = {"COMPLETED", "FAILED", "PENDING"}
 
 
 def validate_row(row):
-
     if not row["account_from"].strip():
         return False, "missing account_from"
 
@@ -38,33 +37,24 @@ def validate_row(row):
 
 
 def load_csv(filepath):
-
     valid = []
     invalid = []
 
     with open(filepath, newline="", encoding="utf-8") as file:
-
         reader = csv.DictReader(file)
 
         for row in reader:
-
             ok, reason = validate_row(row)
 
             if ok:
                 valid.append(row)
             else:
-                invalid.append(
-                    {
-                        "row": row,
-                        "reason": reason
-                    }
-                )
+                invalid.append({"row": row, "reason": reason})
 
     return valid, invalid
 
 
 def setup_database(db_path):
-
     conn = sqlite3.connect(db_path)
 
     conn.execute("""
@@ -82,21 +72,17 @@ def setup_database(db_path):
     """)
 
     conn.commit()
-
     return conn
 
 
 def insert_transactions(conn, valid_rows):
-
     loaded_at = datetime.now().isoformat(timespec="seconds")
 
     inserted = 0
     skipped = 0
 
     for row in valid_rows:
-
         try:
-
             conn.execute(
                 """
                 INSERT INTO transactions (
@@ -124,19 +110,15 @@ def insert_transactions(conn, valid_rows):
                     loaded_at
                 )
             )
-
             inserted += 1
-
         except sqlite3.IntegrityError:
             skipped += 1
 
     conn.commit()
-
     return inserted, skipped
 
 
 def generate_report(conn):
-
     lines = []
 
     lines.append("=" * 60)
@@ -146,7 +128,6 @@ def generate_report(conn):
     )
     lines.append("=" * 60)
 
-    # Summary
     summary = conn.execute("""
         SELECT
             COUNT(*),
@@ -162,16 +143,10 @@ def generate_report(conn):
     lines.append("-" * 40)
 
     lines.append(f"Total transactions : {summary[0]}")
-    lines.append(f"Total volume       : ZAR {summary:,.2f}")
-    lines.append(f"Average amount     : ZAR {summary:,.2f}")
+    lines.append(f"Total volume       : ZAR {summary[1]:,.2f}")
+    lines.append(f"Average amount     : ZAR {summary[2]:,.2f}")
+    lines.append(f"Min / Max          : ZAR {summary[3]:,.2f} / ZAR {summary[4]:,.2f}")
 
-    lines.append(
-        f"Min / Max          : "
-        f"ZAR {summary:,.2f} / "
-        f"ZAR {summary:,.2f}"
-    )
-
-    # Breakdown by Type
     lines.append("")
     lines.append("BREAKDOWN BY TYPE")
     lines.append("-" * 40)
@@ -188,12 +163,9 @@ def generate_report(conn):
 
     for row in rows:
         lines.append(
-            f"{row<12} "
-            f"{row>3} txns   "
-            f"ZAR {row>10,.2f}"
+            f"{row[0]:<12}  {row[1]:>3} txns   ZAR {row[2]:>10,.2f}"
         )
 
-    # Breakdown by Status
     lines.append("")
     lines.append("BREAKDOWN BY STATUS")
     lines.append("-" * 40)
@@ -210,11 +182,9 @@ def generate_report(conn):
 
     for row in rows:
         lines.append(
-            f"{row[0]:<12}           f"{row>3} txns   "
-            f"ZAR {row>10:,.2f}"
+            f"{row[0]:<12}  {row[1]:>3} txns   ZAR {row[2]:>10,.2f}"
         )
 
-    # Top 3 Largest Transactions
     lines.append("")
     lines.append("TOP 3 LARGEST TRANSACTIONS")
     lines.append("-" * 40)
@@ -233,65 +203,42 @@ def generate_report(conn):
 
     for i, row in enumerate(rows, start=1):
         lines.append(
-            f"#{i} "
-            f"{row[0]} "
-            f"{row[1]} "
-            f"ZAR {row,.2f} "
-            f"[{row[3]} / {row[4]}]"
+            f"#{i}  {row[0]}  {row[1]}  ZAR {row[2]:,.2f}  [{row[3]} / {row[4]}]"
         )
 
     lines.append("")
     lines.append("=" * 60)
 
     report_text = "\n".join(lines)
-
-    REPORT_FILE.write_text(
-        report_text,
-        encoding="utf-8"
-    )
+    REPORT_FILE.write_text(report_text, encoding="utf-8")
 
     return report_text
 
 
 if __name__ == "__main__":
-
     print("=== Phase 1: Loading CSV ===")
-
     valid_rows, invalid_rows = load_csv(CSV_FILE)
 
     print(f"Valid rows:   {len(valid_rows)}")
     print(f"Invalid rows: {len(invalid_rows)}")
 
     if invalid_rows:
-
         print("\nInvalid row details:")
-
         for entry in invalid_rows:
-
             txn_id = entry["row"]["transaction_id"]
-
-            print(
-                f"  {txn_id}: {entry['reason']}"
-            )
+            print(f"  {txn_id}: {entry['reason']}")
 
     print("\n=== Phase 2: Loading into SQLite ===")
-
     conn = setup_database(DB_FILE)
-
-    inserted, skipped = insert_transactions(
-        conn,
-        valid_rows
-    )
+    inserted, skipped = insert_transactions(conn, valid_rows)
 
     print(f"Inserted: {inserted}")
     print(f"Skipped (duplicates): {skipped}")
 
     print("\n=== Phase 3: Generating Report ===")
-
     report = generate_report(conn)
 
     print(report)
-
     print(f"\nReport saved to: {REPORT_FILE}")
 
     conn.close()

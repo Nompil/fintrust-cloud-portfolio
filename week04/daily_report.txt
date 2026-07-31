@@ -1,5 +1,6 @@
 ============================================================
 FINTRUST DAILY TRANSACTION REPORT
+Generated: 2026-07-31 13:46:20
 ============================================================
 
 SUMMARY
@@ -11,20 +12,19 @@ Min / Max          : ZAR 120.00 / ZAR 9,999.99
 
 BREAKDOWN BY TYPE
 ----------------------------------------
-TRANSFER      4 txns   ZAR 15,150.74
-DEPOSIT       2 txns   ZAR   925.75
-WITHDRAWAL    2 txns   ZAR   920.00
+TRANSFER        4 txns   ZAR  15,150.74
+DEPOSIT         2 txns   ZAR     925.75
+WITHDRAWAL      2 txns   ZAR     920.00
 
 BREAKDOWN BY STATUS
 ----------------------------------------
-COMPLETED     6 txns   ZAR 15,875.49
-FAILED        1 txns   ZAR   120.00
-PENDING       1 txns   ZAR      0.00
+COMPLETED       7 txns   ZAR  16,876.49
+FAILED          1 txns   ZAR     120.00
 
 TOP 3 LARGEST TRANSACTIONS
 ----------------------------------------
-#1 TXN-008 FT-001 ZAR 9,999.99 [TRANSFER / COMPLETED]
-#2 TXN-005 FT-005 ZAR 3,200.00 [TRANSFER / COMPLETED]
-#3 TXN-001 FT-001 ZAR 1,500.00 [TRANSFER / COMPLETED]
+#1  TXN-008  FT-001  ZAR 9,999.99  [TRANSFER / COMPLETED]
+#2  TXN-005  FT-005  ZAR 3,200.00  [TRANSFER / COMPLETED]
+#3  TXN-001  FT-001  ZAR 1,500.00  [TRANSFER / COMPLETED]
 
 ============================================================
