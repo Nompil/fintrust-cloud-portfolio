@@ -2,61 +2,43 @@ import sqlite3
 import pandas as pd
 from pathlib import Path
 
-DB_FILE = Path("fintrust_analytics.db")
+BASE_DIR = Path(__file__).resolve().parent
+DB_FILE = BASE_DIR / "fintrust_analytics.db"
 
 conn = sqlite3.connect(DB_FILE)
-
-df = pd.read_sql_query(
-    "SELECT * FROM transactions",
-    conn
-)
-
+df = pd.read_sql_query("SELECT * FROM transactions", conn)
 conn.close()
 
 print("=== DataFrame Shape ===")
 print(f"Rows: {len(df)}  Columns: {len(df.columns)}")
+print()
 
-print("\n=== Column Types ===")
+print("=== Column Types ===")
 print(df.dtypes)
+print()
 
-print("\n=== First 3 Rows ===")
+print("=== First 3 Rows ===")
 print(df.head(3))
+print()
 
 completed_transfers = df[
-    (df["status"] == "COMPLETED")
-    & (df["type"] == "TRANSFER")
+    (df["status"] == "COMPLETED") & (df["type"] == "TRANSFER")
 ]
+print(f"Completed transfers: {len(completed_transfers)}")
+print(f"Total volume: ZAR {completed_transfers['amount'].sum():,.2f}")
+print()
 
-print(
-    f"\nCompleted transfers: {len(completed_transfers)}"
-)
-
-print(
-    f"Total volume: "
-    f"ZAR {completed_transfers['amount'].sum():,.2f}"
-)
-
-by_status = (
-    df.groupby("status")
-      .agg(
-          count=("transaction_id", "count"),
-          total_volume=("amount", "sum"),
-          avg_amount=("amount", "mean")
-      )
-      .round(2)
-)
-
-print("\n=== By Status ===")
+by_status = df.groupby("status").agg(
+    count=("transaction_id", "count"),
+    total_volume=("amount", "sum"),
+    avg_amount=("amount", "mean"),
+).round(2)
+print("=== By Status ===")
 print(by_status)
+print()
 
 df["high_value"] = df["amount"] > 2000
-df["txn_date"] = pd.to_datetime(
-    df["timestamp"]
-).dt.date
+df["txn_date"] = pd.to_datetime(df["timestamp"]).dt.date
 
-df.to_csv(
-    "transactions_enriched.csv",
-    index=False
-)
-
-print("\nExported to transactions_enriched.csv")
+df.to_csv(BASE_DIR / "transactions_enriched.csv", index=False)
+print("Exported to transactions_enriched.csv")
