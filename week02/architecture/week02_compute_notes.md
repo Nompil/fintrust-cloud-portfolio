@@ -1,68 +1,35 @@
-\# Week 2 Compute Notes
+# Week 2 Compute Notes
 
+## EC2
 
+EC2 is the right choice when FinTrust needs a traditional server with full operating system control. It is useful for legacy systems, custom workloads, and long-running applications that cannot be easily moved to a serverless pattern.
 
-\## EC2
+## Lambda
 
+Lambda is best for short, event-driven logic such as transaction validation or fraud scoring. It removes the need to manage servers and is cost-efficient when the workload only runs occasionally.
 
+## ECS
 
-\- Virtual machine running in AWS
+ECS is the better fit for container-based services that need to run continuously, such as APIs and microservices. It keeps the deployment model portable while still allowing the application to scale in a managed way.
 
-\- Full operating system control
+## Comparison
 
-\- Suitable for long-running applications
+| Service | Best use case | Why it fits |
+|---|---|---|
+| EC2 | Long-running or custom applications | Gives full infrastructure control |
+| Lambda | Event-driven processing | Scales automatically and avoids idle cost |
+| ECS | Containerised services | Supports reliable, scalable application deployment |
 
+## FinTrust example
 
+FinTrust can use EC2 for legacy workloads, Lambda for real-time fraud checks, and ECS for its core API services. The architecture becomes clearer when each service is matched to a workload rather than forcing one model onto everything.
 
-\## Lambda
-
-
-
-\- Serverless compute service
-
-\- Executes when triggered
-
-\- Pay only when code runs
-
-\- Ideal for transaction processing
-
-
-
-\## ECS
-
-
-
-\- Container orchestration service
-
-\- Runs Docker containers
-
-\- Scales applications efficiently
-
-
-
-\## Comparison
-
-
-
-| Service | Best Use |
-
-|----------|----------|
-
-| EC2 | Full control of servers |
-
-| Lambda | Event-driven workloads |
-
-| ECS | Containerized applications |
-
-
-
-\## FinTrust Example
-
-
-
-\- EC2 for legacy banking systems
-
-\- Lambda for transaction validation
-
-\- ECS for API and microservice workloads
+```mermaid
+flowchart LR
+    A[Customer transaction] --> B{Assess transaction}
+    B -- BLOCKED --> C[Reject and log]
+    B -- PENDING --> D[Send OTP]
+    B -- REVIEW --> E[Flag for analyst]
+    B -- APPROVED --> F[Continue to banking workflow]
+```
 

@@ -1,25 +1,18 @@
 # Week 4 Reflection
 
-## What would break if two processes ran this pipeline at the same time against the same SQLite file?
+1) What I built this week (3–5 sentences):
 
-If two processes ran this pipeline at exactly the same time against the same SQLite database file, write operations could conflict because SQLite allows only one writer at a time. One process could successfully obtain the write lock while the second process encounters a "database is locked" error when attempting to insert records.
+I implemented an end-to-end local ETL pipeline that reads `week04/transactions.csv`, validates and loads transactions into a local SQLite store, and generates a daily report (`daily_report.txt`). I added enrichment steps in `analyse.py` to produce `transactions_enriched.csv` and built the `fintrust_pipeline` package to separate loader, database and reporter responsibilities. I also produced a consolidated Week 4 guide exported to DOCX and HTML for portfolio submission.
 
-## How would RDS Multi-AZ handle this differently?
+2) Key technical decisions and why (3–5 sentences):
 
-Amazon RDS Multi-AZ is designed for concurrent access and high availability. Multiple clients can access the database simultaneously while the database engine manages transactions, locking, and consistency. AWS also manages replication and failover between Availability Zones, providing better fault tolerance, scalability, and reliability than a local SQLite database.
+SQLite was chosen for local reproducibility and minimal setup; production would use RDS Multi-AZ for concurrency and availability. The pipeline is designed to be idempotent and to validate rows before insertion to avoid duplicate or malformed data. Splitting validation, persistence, and reporting into modules improves maintainability and testability.
 
-## Key Lessons Learned
+3) What I struggled with and how I resolved it (2–4 sentences):
 
-In a production environment, RDS Multi-AZ provides higher availability through synchronous replication to a standby instance and automatic failover during infrastructure problems. This makes it more reliable and scalable than a file-based SQLite database for enterprise workloads.
+Initial dependency issues (missing `pandas`) prevented local analysis; I fixed this by installing dependencies in a temporary virtual environment and re-running `analyse.py`. I also ran into PDF conversion limitations with `pandoc` + no LaTeX engine, so I exported the guide as DOCX and HTML instead and documented the PDF requirements.
 
-- Validate data before loading into a database.
-- Use parameterized SQL queries.
-- Use primary keys to prevent duplicates.
-- Design idempotent ETL pipelines.
-- Separate validation, persistence, and reporting into different functions.
+4) What I'd add to make this portfolio artifact stronger (1–2 bullet points):
 
-## boto3 and Parameterisation
-
-boto3 does not use SQL placeholders such as `?` or `%s` because services like S3 and DynamoDB do not use SQL queries. Instead, boto3 sends structured API requests using Python dictionaries and method parameters.
-
-This reduces the risk of injection issues because requests are built from strongly defined API inputs rather than dynamically constructed query strings. Validation and parameter handling occur at the SDK and AWS service level rather than through SQL parameterisation.
+- Add a small integration test that runs `week04/main.py` in a temporary directory to verify end-to-end behaviour.
+- Replace SQLite with a small Dockerized RDS-compatible instance for testing concurrent access scenarios if needed.

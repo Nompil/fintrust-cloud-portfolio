@@ -1,26 +1,18 @@
-\# Week 3 Reflection
+# Week 3 Reflection
 
+1) What I built this week (3–5 sentences):
 
+I developed and refined data-cleaning utilities for FinTrust transaction data (`clean_transactions_v2.py`), created helper scripts to prepare directory structures, and experimented with CSV/JSON test data for the pipeline. I also documented storage design choices and created diagrams that show how raw data flows into cleaned datasets for later analytics.
 
-\## What storage service would you choose for FinTrust's compliance archive and why?
+2) Key technical decisions and why (3–5 sentences):
 
+I focused on deterministic, idempotent cleaning steps: normalise date/time, enforce numeric types for amounts, and drop or tag malformed rows so downstream analytics can handle them. The approach improves reproducibility and makes debugging ETL issues easier in later pipeline stages.
 
+3) What I struggled with and how I resolved it (2–4 sentences):
 
-I would choose Amazon S3 with Glacier Deep Archive for FinTrust's compliance archive. This solution provides extremely durable storage, supports long-term retention requirements and offers a cost-effective option for storing records that are rarely accessed. It also aligns with POPIA requirements through encryption, access controls and lifecycle management.
+Error handling and logging were new challenges; I moved from print-based debugging to structured logging and explicit exception handling in the cleaning scripts. This made it easier to trace failures and keep data validation visible in pipeline logs.
 
+4) What I'd add to make this portfolio artifact stronger (1–2 bullet points):
 
-
-\## What was the hardest Python concept this week?
-
-
-
-The most challenging concept for me was error handling and logging. Understanding when to use try, except, else and finally required careful thinking. Logging was also new because it introduced a more professional way of monitoring script execution compared to using print statements.
-
-
-
-\## What will you apply first on a real project?
-
-
-
-The first skill I would apply is file processing using CSV and JSON. Many business systems exchange information using these formats, and the ability to clean, validate and transform data is important for automation, reporting and cloud data pipelines.
-
+- Add a small sample dataset and a short notebook or script that demonstrates the cleaning steps end-to-end.
+- Export diagrams from `week03/diagrams/` and reference them from the README.

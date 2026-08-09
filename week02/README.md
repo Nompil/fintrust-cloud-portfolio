@@ -8,7 +8,7 @@
 - A transaction decision engine for fraud detection
 - AWS compute architecture notes
 - AWS storage architecture notes
-- Lambda and container architecture documentation
+- Lambda, container, and shared-storage documentation
 
 ---
 
@@ -53,20 +53,17 @@
 
 ### SQL
 
-Open the SQL files in SQLite or MySQL.
+Run the SQL files in SQLite or MySQL.
 
 ```sql
-.read day1_joins.sql
-.read day2_aggregates.sql
+.read sql/joins_practice.sql
+.read sql/aggregates_report.sql
 ```
 
 ### Python
 
 ```powershell
 python python\conditionals.py
-
-python python\day3_exercises.py
-
 python python\transaction_flowchart.py
 ```
 
@@ -90,21 +87,19 @@ and focuses on cloud architecture, security, automation, governance and software
 
 ### SQL
 
-- day1_joins.sql
-- day2_aggregates.sql
+- sql/joins_practice.sql
+- sql/aggregates_report.sql
 
 ### Python
 
-- conditionals.py
-- day3_exercises.py
-- transaction_flowchart.py
+- python/conditionals.py
+- python/transaction_flowchart.py
 
 ### Notes
 
-- container-architecture.md
-- lambda-design.md
-- compute-decision-map.md
-- storage-decision.md
-- shared-storage-decision.md
-- python-environment.md
-- conditionals-reference.md
+- architecture/week02_compute_notes.md
+- notes/container-architecture.md
+- notes/lambda-design.md
+- notes/compute-decision-map.md
+- notes/storage-decision.md
+- notes/shared-storage-decision.md

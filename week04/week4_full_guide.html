@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>week4_full_guide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<p>WEEK 4 · DAY 1 · REFERENCE GUIDE</p>
+<h1 id="rds-quick-reference">RDS <em>Quick Reference</em></h1>
+<p>Engine comparison, Multi-AZ vs Read Replica decision table, backup
+cheatsheet, and the most common SAA-C03 RDS exam traps — one page to
+print and keep.</p>
+<p>Guide W4 D1</p>
+<p>G01RDS Engine Comparison Six Engines — Which to Choose</p>
+<p>EngineBest ForKey AdvantageSAA Trigger KeywordsPostgreSQLComplex
+queries, JSON, GIS data, financial systemsBest standards compliance;
+supports advanced SQL (CTEs, window functions, JSONB)“complex
+transactions”, “JSONB”, “PostGIS”, “open source”MySQLWeb apps,
+WordPress, general-purpose OLTPMost widely deployed; large community;
+high compatibility”MySQL”, “LAMP stack”, “web
+application”MariaDBMySQL-compatible workloads needing community
+forkDrop-in MySQL replacement with some extra features”MariaDB”, “MySQL
+fork”OracleEnterprise apps with Oracle licensing dependenciesOnly option
+if app requires Oracle-specific PL/SQL packages”Oracle”, “PL/SQL”,
+“enterprise Oracle workload”SQL Server.NET apps, Microsoft stack,
+Windows authNative Windows authentication; SSRS/SSIS integration”SQL
+Server”, “.NET”, “Windows integrated auth”Aurora MySQL /
+PostgreSQLHigh-scale OLTP needing better performance and HA5x MySQL
+throughput, 3x PostgreSQL; 6-copy storage across 3 AZs”15 read
+replicas”, “Global Database”, “Aurora Serverless”</p>
+<p>🔑<strong>Default answer for SAA:</strong> When the question says
+“relational database” and doesn’t specify an engine, PostgreSQL or MySQL
+on RDS (or Aurora) is almost always the right direction. Oracle and SQL
+Server only win when the question explicitly mentions those
+platforms.</p>
+<p>G02Multi-AZ vs Read Replica Availability vs Performance — Never
+Confuse These</p>
+<p>PropertyMulti-AZRead ReplicaPrimary purpose<strong>High availability
+/ DRRead scaling / reporting offload</strong>ReplicationSynchronous —
+standby is always in syncAsynchronous — slight replica lag
+possibleStandby readable?NO — standby is passive, not accessible for
+queriesYES — each replica is an independent readable
+endpointFailoverAutomatic — DNS flips in 60–120 seconds on primary
+failureManual promotion required — not automatic failoverConnection
+string change?NO — same endpoint before and after failoverYES — replica
+has its own endpoint URLMax replicas1 standby (Multi-AZ); up to 3 with
+Multi-AZ DB Cluster (Aurora-like)Up to 5 for MySQL/PostgreSQL; up to 15
+for AuroraCross-region?NO — standby is in a different AZ, same RegionYES
+— cross-region Read Replicas supportedTypical use caseProduction
+database that must survive an AZ failureAnalytics, reporting, reducing
+load on primary</p>
+<p>⚠️<strong>Classic exam trap:</strong> “The standby in Multi-AZ can be
+used for read traffic to improve performance.” — FALSE. The standby is
+passive and not accessible. For read scaling, you need Read Replicas in
+addition to Multi-AZ.</p>
+<p>G03RDS Backup Cheatsheet Automated Backups · Snapshots · PITR</p>
+<p>FeatureAutomated BackupsManual SnapshotsTriggered byRDS automatically
+— daily during the backup windowYou (or automation) — on
+demandRetention1–35 days (set at creation; default 7 days)Indefinite —
+until you delete themPoint-in-time restore (PITR)YES — restore to any
+second within the retention windowNO — only to the exact moment of the
+snapshotTransaction logsYES — stored to S3 continuously; enables PITRNO
+— snapshots are at a moment in time onlySurvive DB deletion?NO — deleted
+with the DB unless you take a final snapshotYES — persist after you
+delete themCross-region copy?Supports automated backup replication to
+another RegionYES — can copy snapshot to another Region</p>
+<p>🔑<strong>SAA exam points:</strong> (1) Maximum automated backup
+retention is <strong>35 days</strong> — not 90, not unlimited. If the
+scenario requires more, use AWS Backup with a lifecycle policy. (2) PITR
+is only possible with automated backups, not manual snapshots. (3)
+Setting retention to 0 disables automated backups entirely.</p>
+<p>G04Top 5 RDS Exam Traps SAA-C03 Most Common Mistakes</p>
+<ul>
+<li><strong>“Multi-AZ improves read performance”</strong> — FALSE.
+Multi-AZ is for availability only. The standby is not readable. Use Read
+Replicas for read scaling.</li>
+<li><strong>“Multi-AZ failover requires a connection string
+change”</strong> — FALSE. The RDS endpoint (DNS) automatically points to
+the new primary after failover. Your app reconnects to the same
+endpoint.</li>
+<li><strong>“Read Replicas provide automatic failover”</strong> — FALSE.
+Read Replicas must be manually promoted. Only Multi-AZ provides
+automatic failover.</li>
+<li><strong>“You can restore a backup to an existing instance”</strong>
+— FALSE. Point-in-time restore and snapshot restore always create a NEW
+RDS instance. You then update your application’s connection string.</li>
+<li><strong>“RDS automated backups are kept indefinitely”</strong> —
+FALSE. They are deleted when you delete the DB (unless you take a final
+snapshot) and have a maximum retention of 35 days.</li>
+</ul>
+<p>FINTRUSTCheckpoint — FinTrust RDS Choices Engine
+Choice<strong>PostgreSQL</strong> on RDS Multi-AZ. Chosen for ACID
+compliance, complex transaction queries, and JSONB support for trade
+documents. Not Oracle (no licensing requirement), not MySQL
+(PostgreSQL’s SQL standards compliance is better for financial
+data).</p>
+<p>Multi-AZ ConfigPrimary in <strong>af-south-1a</strong>, standby in
+<strong>af-south-1b</strong>. Synchronous replication. Automatic
+failover in 60–120 seconds. Same connection string before and after
+failover. Standby is NOT readable.</p>
+<p>Backup PolicyAutomated backups: <strong>15-day retention</strong>
+(regulatory requirement). Daily backup window: 02:00–03:00 SAST. PITR
+enabled within retention window. Weekly manual snapshots retained
+indefinitely for audit.</p>
+<hr />
+<p>(Full Week 4 content captured — Day 2, Day 3, Day 4, Day 5 and labs
+are included in the original user content. If you want day-specific
+files, request splitting.)</p>
+</body>
+</html>
