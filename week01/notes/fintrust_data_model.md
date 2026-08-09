@@ -1,220 +1,53 @@
-\# FinTrust Data Model
+# FinTrust Data Model
 
+The FinTrust data model is built around three core entities: customers, accounts, and transactions. Together they support banking operations, reporting, and analytics.
 
+## Entity Relationship Summary
 
-\## Overview
+Customers -> Accounts -> Transactions
 
+- One customer can have many accounts
+- One account can have many transactions
 
+## Customers
 
-The FinTrust transaction intelligence system is built around three core entities:
+Purpose: store customer identity and contact information.
 
+Key fields:
+- customer_id
+- first_name
+- last_name
+- email
+- province
+- created_at
 
+## Accounts
 
-1\. Customers
+Purpose: store account details for each customer.
 
-2\. Accounts
+Key fields:
+- account_id
+- customer_id
+- account_type
+- account_number
+- balance
+- status
 
-3\. Transactions
+## Transactions
 
+Purpose: store financial activity for each account.
 
+Key fields:
+- transaction_id
+- account_id
+- transaction_type
+- amount
+- merchant_category
+- transaction_date
 
-These entities form the foundation of the banking platform and support customer management, account management, transaction processing, reporting and fraud detection.
+## Why This Model Matters
 
-
-
-\---
-
-
-
-\# Entity Relationship Diagram
-
-
-
-CUSTOMERS (1) ------< ACCOUNTS (1) ------< TRANSACTIONS (Many)
-
-
-
-A customer can own multiple accounts.
-
-
-
-An account can have multiple transactions.
-
-
-
-\---
-
-
-
-\# CUSTOMERS
-
-
-
-Stores customer information.
-
-
-
-\## Attributes
-
-
-
-\- customer\_id (Primary Key)
-
-\- first\_name
-
-\- last\_name
-
-\- id\_number
-
-\- email
-
-\- phone
-
-\- province
-
-\- created\_at
-
-
-
-\## Business Purpose
-
-
-
-The Customers table stores personal and contact information for FinTrust customers.
-
-
-
-\---
-
-
-
-\# ACCOUNTS
-
-
-
-Stores banking account information.
-
-
-
-\## Attributes
-
-
-
-\- account\_id (Primary Key)
-
-\- customer\_id (Foreign Key)
-
-\- account\_type
-
-\- account\_number
-
-\- balance
-
-\- status
-
-
-
-\## Account Types
-
-
-
-\- CHEQUE
-
-\- SAVINGS
-
-\- CREDIT
-
-
-
-\## Status Values
-
-
-
-\- ACTIVE
-
-\- SUSPENDED
-
-
-
-\## Business Purpose
-
-
-
-The Accounts table stores account details and links each account to a customer.
-
-
-
-\---
-
-
-
-\# TRANSACTIONS
-
-
-
-Stores financial transaction information.
-
-
-
-\## Attributes
-
-
-
-\- transaction\_id (Primary Key)
-
-\- account\_id (Foreign Key)
-
-\- type
-
-\- amount
-
-\- description
-
-\- merchant\_category
-
-\- transaction\_date
-
-\- reference\_no
-
-
-
-\## Transaction Types
-
-
-
-\- DEBIT
-
-\- CREDIT
-
-\- PAYMENT
-
-
-
-\## Business Purpose
-
-
-
-The Transactions table records all financial activity for customer accounts and provides data for reporting, auditing and fraud detection.
-
-
-
-\---
-
-
-
-\# Relationships
-
-
-
-\## Customer → Accounts
-
-
-
-One customer can own multiple accounts.
-
-
-
-Example:
+This structure reflects a realistic banking relationship model. It supports referential integrity, clear reporting logic, and scalable analytics for fraud detection and customer insights.
 
 
 

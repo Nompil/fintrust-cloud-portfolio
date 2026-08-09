@@ -1,222 +1,45 @@
-\# FinTrust Multi-Account Governance
+# FinTrust Multi-Account Governance
 
+FinTrust uses AWS Organizations to separate production workloads, security, governance, and training environments into dedicated accounts. This approach improves security, compliance, auditing, and operational management.
 
+## Organizational Units
 
-\## Overview
+### Management OU
+- Account: Management
+- Purpose: consolidated billing and organization-wide governance
+- Note: no workloads run in this account
 
+### Security OU
+- Log Archive Account: centralised CloudTrail and AWS Config logs
+- Audit Account: read-only access for compliance and security review
 
+### Production OU
+- Account: banking-prod
+- Purpose: host all production workloads
+- Services: Auto Scaling Groups, Application Load Balancers, Amazon RDS, Amazon SQS, Amazon SNS, and Pilot Light DR
 
-FinTrust uses AWS Organizations to separate production workloads, security services, governance controls, and training environments into dedicated accounts.
+### Sandbox OU
+- Account: sandbox-training
+- Purpose: experimentation, learning, and test environments
 
+## Service Control Policies
 
-
-This approach improves security, compliance, auditing, and operational management.
-
-
-
-\---
-
-
-
-\# Organizational Units (OUs)
-
-
-
-\## Management OU
-
-
-
-\### Account
-
-
-
-\- Management
-
-
-
-\### Purpose
-
-
-
-\- Consolidated billing
-
-\- Organization-wide governance
-
-\- Service Control Policy (SCP) management
-
-
-
-\### Notes
-
-
-
-No workloads run in this account.
-
-
-
-\---
-
-
-
-\## Security OU
-
-
-
-\### Log Archive Account
-
-
-
-Purpose:
-
-
-
-\- Centralized CloudTrail logs
-
-\- Centralized AWS Config logs
-
-\- Long-term audit retention
-
-
-
-\### Audit Account
-
-
-
-Purpose:
-
-
-
-\- Read-only access for compliance teams
-
-\- Security reviews and investigations
-
-
-
-\---
-
-
-
-\## Production OU
-
-
-
-\### Account
-
-
-
-\- banking-prod
-
-
-
-\### Purpose
-
-
-
-Hosts all FinTrust production workloads.
-
-
-
-\### Services
-
-
-
-\- Auto Scaling Groups (ASG)
-
-\- Application Load Balancers (ALB)
-
-\- Amazon RDS
-
-\- Amazon SQS
-
-\- Amazon SNS
-
-\- Pilot Light Disaster Recovery
-
-
-
-\---
-
-
-
-\## Sandbox OU
-
-
-
-\### Account
-
-
-
-\- sandbox-training
-
-
-
-\### Purpose
-
-
-
-\- Experimentation
-
-\- Learning
-
-\- Training labs
-
-\- Testing new solutions
-
-
-
-\---
-
-
-
-\# Service Control Policies (SCPs)
-
-
-
-\## Region Restriction SCP
-
-
-
+### Region Restriction SCP
 Allowed Regions:
+- af-south-1 (Cape Town)
+- eu-west-1 (Ireland)
 
+Purpose:
+- support POPIA data residency requirements
+- support disaster recovery strategy
+- enforce governance boundaries
 
+### CloudTrail Protection SCP
+Denied actions:
+- cloudtrail:StopLogging
+- cloudtrail:DeleteTrail
 
-\- af-south-1 (Cape Town)
-
-\- eu-west-1 (Ireland)
-
-
-
-\### Purpose
-
-
-
-Supports:
-
-
-
-\- POPIA data residency requirements
-
-\- Disaster recovery strategy
-
-\- Governance controls
-
-
-
-\---
-
-
-
-\## CloudTrail Protection SCP
-
-
-
-Denied Actions:
-
-
-
-\- cloudtrail:StopLogging
-
-\- cloudtrail:DeleteTrail
+This protects the audit trail and ensures compliance controls remain active across the organization.
 
 
 

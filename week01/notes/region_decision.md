@@ -1,26 +1,23 @@
-# FinTrust Region Decision — CPLG Framework Analysis
+# FinTrust Region Decision — CPLG Framework
 
-## Scenario
-FinTrust Bank serves 2.3 million South African customers. It processes card transactions, mobile payments, and account queries. POPIA (Protection of Personal Information Act) requires that personal financial data of South African citizens must be processed and stored within South Africa.
+FinTrust operates in South Africa and must meet POPIA data residency requirements. For that reason, the primary AWS Region should be af-south-1, the Cape Town Region.
 
 ## CPLG Analysis
 
-### Compliance (C) — Highest Priority
-POPIA mandates South African data residency. This is non-negotiable. Only **af-south-1 (Cape Town)** qualifies as an AWS Region within South Africa.
+### Compliance
+POPIA requires that personal financial data of South African citizens be processed and stored within South Africa. This makes af-south-1 the only suitable primary Region for live banking workloads.
 
-### Proximity (P)
-All 2.3 million FinTrust customers are in South Africa (across all nine provinces). Deploying in `af-south-1` places the infrastructure geographically closest to users, minimising latency for transaction processing.
+### Proximity
+FinTrust serves customers across South Africa, so deploying in the local Region reduces latency and aligns the architecture with the business footprint.
 
-### Latency (L)
-`af-south-1` has all required AWS services for FinTrust: EC2 (compute), RDS (databases), Lambda (serverless), S3 (storage), DynamoDB (NoSQL). No service gaps exist.
+### Latency
+The Cape Town Region provides the required AWS services for FinTrust's initial architecture, including EC2, RDS, Lambda, S3, and DynamoDB.
 
-### Go-live Cost (G)
-`af-south-1` is approximately 20–30% more expensive than `us-east-1` (US East), but this is a tie-breaker only. Compliance and proximity override cost.
+### Cost
+Cost is relevant, but it is a secondary factor here. Compliance and proximity are more important than a lower-cost Region outside South Africa.
 
 ## Decision
-**Primary Region: af-south-1 (Cape Town)**
+The recommended primary Region is af-south-1 (Cape Town). It is the best fit for compliance, user proximity, and operational suitability.
 
-**Justification:** Compliance first (POPIA), supported by proximity to all nine provinces and acceptable latency. Cost is not a factor here — legal compliance is non-negotiable.
-
-## Multi-AZ Strategy
-`af-south-1` has 3 availability zones: `af-south-1a`, `af-south-1b`, `af-south-1c`. FinTrust's production systems will be deployed across at least 2 AZs for high availability and automatic failover. This protects against single data centre failures.
+## Multi-AZ Direction
+FinTrust should run production workloads across at least two Availability Zones in af-south-1 to improve resilience and protect against single-AZ failures.

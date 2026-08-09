@@ -1,220 +1,33 @@
-\# FinTrust Resilience and Disaster Recovery Plan
+# FinTrust Resilience and Disaster Recovery Plan
 
+FinTrust needs a layered resilience strategy that combines scaling, traffic distribution, message decoupling, and disaster recovery planning.
 
+## Auto Scaling Group
 
-\## Overview
+- Minimum capacity: 2
+- Desired capacity: 4
+- Maximum capacity: 10
+- Availability Zones: af-south-1a and af-south-1b
 
+Scaling policy approach:
+- Target Tracking at 60% CPU for steady-state behaviour
+- Scheduled Scaling before month-end peaks
 
+## Application Load Balancer
 
-This document describes the resilience, scalability, decoupling and disaster recovery strategy for the FinTrust cloud-native banking platform.
+The ALB sits in front of the Auto Scaling Group and distributes traffic across healthy targets. It supports path-based routing for the accounts, transactions, and fraud-alerts services.
 
+## SQS Decoupling
 
+The mobile app submits payment events to an SQS queue, and the fraud-scoring service consumes them independently. This prevents a slowdown in fraud processing from blocking customer transactions.
 
-The design supports high availability, fault tolerance, customer growth, and regulatory compliance.
+## SNS Fan-Out
 
+A transaction-completed event is published to an SNS topic and fan-out to the notification, audit logging, and analytics consumers.
 
+## Disaster Recovery
 
-\---
-
-
-
-\# Auto Scaling Group (ASG)
-
-
-
-\## Configuration
-
-
-
-\- Minimum Capacity: 2
-
-\- Desired Capacity: 4
-
-\- Maximum Capacity: 10
-
-
-
-\## Availability Zones
-
-
-
-\- af-south-1a
-
-\- af-south-1b
-
-
-
-\## Scaling Policies
-
-
-
-\### Target Tracking
-
-
-
-\- CPU Utilization Target: 60%
-
-
-
-\### Scheduled Scaling
-
-
-
-Month-end salary processing creates predictable traffic spikes.
-
-
-
-Capacity increases from:
-
-
-
-\- Desired: 4
-
-\- Increased Capacity: 8
-
-
-
-before the surge begins.
-
-
-
-\## Benefits
-
-
-
-\- Elastic scaling
-
-\- High availability
-
-\- Automatic recovery from instance failure
-
-
-
-\---
-
-
-
-\# Application Load Balancer (ALB)
-
-
-
-\## Purpose
-
-
-
-The ALB sits in front of the Auto Scaling Group and distributes traffic across healthy instances.
-
-
-
-\## Path-Based Routing
-
-
-
-Routes requests to:
-
-
-
-\- /api/accounts/\*
-
-\- /api/transactions/\*
-
-\- /api/fraud-alerts/\*
-
-
-
-\## Benefits
-
-
-
-\- Single DNS endpoint
-
-\- Single TLS certificate
-
-\- HTTP/HTTPS awareness
-
-\- Path-based routing
-
-\- Integration with Lambda targets
-
-
-
-\---
-
-
-
-\# SQS Decoupling Pattern
-
-
-
-\## Architecture
-
-
-
-Mobile App
-
-→ SQS Queue
-
-→ Fraud Scoring Service
-
-
-
-\## Purpose
-
-
-
-Transaction processing is separated from fraud analysis.
-
-
-
-If fraud processing slows down:
-
-
-
-\- Transactions continue being accepted
-
-\- Messages accumulate safely in the queue
-
-
-
-\## Benefits
-
-
-
-\- Failure isolation
-
-\- Improved scalability
-
-\- Better customer experience
-
-
-
-\---
-
-
-
-\# SNS Fan-Out Pattern
-
-
-
-\## Architecture
-
-
-
-Transaction Completed Event
-
-→ SNS Topic
-
-
-
-Consumers:
-
-
-
-\- Customer Notification Service
-
-\- Audit Logging Service
-
-\- Analytics Service
+FinTrust should use a Pilot Light strategy with encrypted backups and a minimal standby environment in eu-west-1. This supports an RPO of around 15 minutes and an RTO below one hour while avoiding the cost of a fully active secondary environment.
 
 
 

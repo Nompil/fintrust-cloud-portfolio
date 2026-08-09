@@ -1,222 +1,40 @@
-\# FinTrust EC2 Compute Decisions
+# FinTrust EC2 Compute Decisions
 
+FinTrust needs different compute patterns for different workloads. The architecture should match each workload to the most appropriate EC2 family, placement strategy, and pricing model.
 
+## Transaction Processing API
 
-\## Overview
+- Service: EC2 instances behind an Application Load Balancer
+- Instance type: c6i.xlarge
+- Pricing model: 3-year Reserved Instances
+- Reason: the workload is predictable and continuously active, so a committed purchase model is cost-effective
 
+## Fraud Detection Batch
 
+- Service: EC2 batch compute
+- Instance type: c6i.4xlarge
+- Pricing model: Spot Instances
+- Design detail: checkpoint progress every 10 minutes and store checkpoints in Amazon S3
+- Reason: the workload is fault-tolerant and benefits from lower-cost interruptible capacity
 
-FinTrust serves 2.3 million customers and expects to grow to 5 million customers by 2027.
+## Fraud Detection ML Training Cluster
 
+- Service: GPU-based training cluster
+- Instance type: p4d.24xlarge
+- Placement strategy: Cluster Placement Group
+- Pricing model: Spot Instances
+- Reason: the workload requires very high GPU-to-GPU throughput and can tolerate interruption when cost savings are prioritised
 
+## Transaction Database Pair
 
-Multiple AWS compute services are required because different workloads have different performance, availability and cost requirements.
+- Service: primary and standby database instances
+- Placement strategy: Spread Placement Group
+- Pricing model: Reserved Instances
+- Reason: the database tier needs high availability and hardware isolation without sacrificing cost efficiency
 
+## Summary
 
-
-\---
-
-
-
-\## Transaction Processing API
-
-
-
-\### Requirement
-
-
-
-\- Always running
-
-\- Handles customer transactions
-
-\- Supports burst traffic
-
-
-
-\### AWS Design
-
-
-
-\- EC2
-
-\- Auto Scaling Group
-
-\- Application Load Balancer (ALB)
-
-
-
-\### Instance Type
-
-
-
-c6i.xlarge
-
-
-
-\### Pricing Model
-
-
-
-3-Year Reserved Instances
-
-
-
-\### Reason
-
-
-
-Predictable workload with high utilisation.
-
-
-
-\---
-
-
-
-\## Fraud Detection Batch
-
-
-
-\### Requirement
-
-
-
-\- Overnight processing
-
-\- Fault tolerant
-
-\- Long-running workload
-
-
-
-\### AWS Design
-
-
-
-c6i.4xlarge
-
-
-
-\### Pricing Model
-
-
-
-Spot Instances
-
-
-
-\### Additional Design
-
-
-
-\- Checkpoint progress every 10 minutes
-
-\- Store checkpoints in Amazon S3
-
-
-
-\### Reason
-
-
-
-Can tolerate interruptions and achieves significant cost savings.
-
-
-
-\---
-
-
-
-\## Fraud Detection ML Training Cluster
-
-
-
-\### Requirement
-
-
-
-\- GPU-intensive machine learning
-
-\- Maximum throughput
-
-
-
-\### AWS Design
-
-
-
-p4d.24xlarge
-
-
-
-\### Placement Strategy
-
-
-
-Cluster Placement Group
-
-
-
-\### Pricing Model
-
-
-
-Spot Instances
-
-
-
-\### Reason
-
-
-
-Maximises GPU-to-GPU communication performance.
-
-
-
-\---
-
-
-
-\## Transaction Database Pair
-
-
-
-\### Requirement
-
-
-
-\- High availability
-
-\- Fault tolerance
-
-
-
-\### Design
-
-
-
-Primary and Standby Database
-
-
-
-\### Placement Strategy
-
-
-
-Spread Placement Group
-
-
-
-\### Pricing Model
-
-
-
-Reserved Instances
-
-
-
-\### Reason
+The overall design balances performance, resilience, and cost by matching each workload to the right compute pattern rather than using one-size-fits-all infrastructure.
 
 
 
