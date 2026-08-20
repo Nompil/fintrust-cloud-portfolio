@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""
-clean_transactions_v2.py
-Transaction pipeline with error handling and logging.
-"""
+"""Clean FinTrust transaction data and write a daily summary."""
 
 import csv
 import json
@@ -10,8 +7,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-# ── Logging setup ──────────────────────────────────────────────────
-LOG_DIR  = Path(__file__).parent / "logs"
+LOG_DIR = Path(__file__).parent / "logs"
 DATA_DIR = Path(__file__).parent / "data"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -22,103 +18,127 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
         logging.FileHandler(LOG_DIR / "pipeline.log"),
-        logging.StreamHandler()
-    ]
+        logging.StreamHandler(),
+    ],
 )
 logger = logging.getLogger("fintrust.pipeline")
 
-# ── Config ─────────────────────────────────────────────────────────
-RAW_INPUT    = DATA_DIR / "raw_transactions.csv"
-CLEAN_CSV    = DATA_DIR / "clean_transactions.csv"
+RAW_INPUT = DATA_DIR / "raw_transactions.csv"
+CLEAN_CSV = DATA_DIR / "clean_transactions.csv"
 SUMMARY_JSON = DATA_DIR / "daily_summary.json"
+REQUIRED_COLUMNS = {"TxID", "AcctID", "TYPE", "Amount", "Date", "Desc"}
+
+
+def validate_headers(fieldnames):
+    """Raise ValueError when the input CSV is missing a required column."""
+    if fieldnames is None:
+        raise ValueError("CSV file has no header row")
+
+    missing = REQUIRED_COLUMNS.difference(fieldnames)
+    if missing:
+        raise ValueError(f"CSV header is missing: {', '.join(sorted(missing))}")
 
 
 def normalise_date(date_str):
-    for fmt in ("%Y-%m-%d", "%Y-%-m-%d", "%d/%m/%y", "%d/%m/%Y"):
+    """Return a supported date in ISO format."""
+    for date_format in ("%Y-%m-%d", "%d/%m/%y", "%d/%m/%Y"):
         try:
-            return datetime.strptime(date_str.strip(), fmt).strftime("%Y-%m-%d")
+            return datetime.strptime(date_str.strip(), date_format).strftime("%Y-%m-%d")
         except ValueError:
             continue
-    logger.warning("Unrecognised date format: '%s' — returning as-is", date_str)
-    return date_str.strip()
+    raise ValueError(f"unrecognised date format: {date_str!r}")
 
 
 def clean_transaction(row, row_num):
-    """Return cleaned transaction dict; raises ValueError on bad data."""
+    """Return a cleaned transaction or raise ValueError for unsuitable data."""
     try:
         return {
             "transaction_id": int(row["TxID"].strip()),
-            "account_id":     int(row["AcctID"].strip()),
-            "type":           row["TYPE"].strip().lower(),
-            "amount":         float(row["Amount"].strip()),
-            "date":           normalise_date(row["Date"]),
-            "description":    row.get("Desc", "").strip() or "No description",
+            "account_id": int(row["AcctID"].strip()),
+            "type": row["TYPE"].strip().lower(),
+            "amount": float(row["Amount"].strip()),
+            "date": normalise_date(row["Date"]),
+            "description": row.get("Desc", "").strip() or "No description",
         }
-    except (KeyError, ValueError) as e:
-        raise ValueError(f"Row {row_num}: {e}") from e
+    except (KeyError, ValueError) as error:
+        raise ValueError(f"Row {row_num}: {error}") from error
 
 
 def main():
-    logger.info("=== FinTrust Transaction Pipeline starting ===")
-    logger.info("Input:  %s", RAW_INPUT)
+    logger.info("FinTrust transaction pipeline starting")
+    logger.info("Input: %s", RAW_INPUT)
 
     if not RAW_INPUT.exists():
-        logger.critical("Input file not found: %s — aborting", RAW_INPUT)
+        logger.critical("Input file not found: %s", RAW_INPUT)
         return
 
     transactions = []
     skipped = 0
 
     try:
-        with open(RAW_INPUT, "r", newline="", encoding="utf-8") as fin:
-            reader = csv.DictReader(fin)
-            for row_num, row in enumerate(reader, start=2):  # 2 = first data row
+        with RAW_INPUT.open("r", newline="", encoding="utf-8") as input_file:
+            reader = csv.DictReader(input_file)
+            validate_headers(reader.fieldnames)
+            for row_num, row in enumerate(reader, start=2):
                 try:
-                    tx = clean_transaction(row, row_num)
-                    transactions.append(tx)
-                    logger.debug("Processed row %d: tx_id=%s", row_num, tx["transaction_id"])
-                except ValueError as e:
-                    logger.warning("Skipped: %s", e)
+                    transaction = clean_transaction(row, row_num)
+                    transactions.append(transaction)
+                    logger.debug(
+                        "Processed row %d: transaction_id=%s",
+                        row_num,
+                        transaction["transaction_id"],
+                    )
+                except ValueError as error:
+                    logger.warning("Skipped: %s", error)
                     skipped += 1
     except PermissionError:
         logger.error("Permission denied reading %s", RAW_INPUT)
         return
-    except UnicodeDecodeError as e:
-        logger.error("Encoding error in %s: %s", RAW_INPUT, e)
+    except UnicodeDecodeError as error:
+        logger.error("Encoding error in %s: %s", RAW_INPUT, error)
+        return
+    except ValueError as error:
+        logger.error("Invalid CSV: %s", error)
         return
 
     logger.info("Processed: %d rows, skipped: %d", len(transactions), skipped)
 
-    # Write clean CSV
+    fieldnames = [
+        "transaction_id",
+        "account_id",
+        "type",
+        "amount",
+        "date",
+        "description",
+    ]
     try:
-        fieldnames = ["transaction_id", "account_id", "type", "amount", "date", "description"]
-        with open(CLEAN_CSV, "w", newline="", encoding="utf-8") as fout:
-            writer = csv.DictWriter(fout, fieldnames=fieldnames)
+        with CLEAN_CSV.open("w", newline="", encoding="utf-8") as output_file:
+            writer = csv.DictWriter(output_file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(transactions)
         logger.info("Clean CSV written: %s", CLEAN_CSV)
-    except OSError as e:
-        logger.error("Failed to write CSV: %s", e)
+    except OSError as error:
+        logger.error("Failed to write CSV: %s", error)
+        return
 
-    # Write summary JSON
+    deposits = [item for item in transactions if item["type"] == "deposit"]
+    withdrawals = [item for item in transactions if item["type"] == "withdrawal"]
+    summary = {
+        "run_timestamp": datetime.now().isoformat(),
+        "total": len(transactions),
+        "deposits": len(deposits),
+        "withdrawals": len(withdrawals),
+        "sum_deposits": round(sum(item["amount"] for item in deposits), 2),
+        "sum_withdrawals": round(sum(item["amount"] for item in withdrawals), 2),
+        "skipped_rows": skipped,
+    }
     try:
-        deposits    = [t for t in transactions if t["type"] == "deposit"]
-        withdrawals = [t for t in transactions if t["type"] == "withdrawal"]
-        summary = {
-            "run_timestamp":    datetime.now().isoformat(),
-            "total":            len(transactions),
-            "deposits":         len(deposits),
-            "withdrawals":      len(withdrawals),
-            "sum_deposits":     round(sum(t["amount"] for t in deposits), 2),
-            "sum_withdrawals":  round(sum(t["amount"] for t in withdrawals), 2),
-            "skipped_rows":     skipped,
-        }
-        with open(SUMMARY_JSON, "w", encoding="utf-8") as f:
-            json.dump(summary, f, indent=2)
+        with SUMMARY_JSON.open("w", encoding="utf-8") as summary_file:
+            json.dump(summary, summary_file, indent=2)
         logger.info("Summary JSON written: %s", SUMMARY_JSON)
-        logger.info("=== Pipeline complete ===")
-    except OSError as e:
-        logger.error("Failed to write summary: %s", e)
+        logger.info("Pipeline complete")
+    except OSError as error:
+        logger.error("Failed to write summary: %s", error)
 
 
 if __name__ == "__main__":

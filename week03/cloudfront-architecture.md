@@ -1,70 +1,15 @@
-\# Week 3 CloudFront Architecture
+# FinTrust CloudFront Architecture
 
+CloudFront delivers the public portal's static assets while the S3 origins remain private.
 
+The delivery path is shown in the [Week 3 architecture diagrams PDF](diagrams/week03_architecture_diagrams.pdf).
 
-\## Overview
+## Controls and behaviour
 
-
-
-FinTrust uses Amazon CloudFront in front of Amazon S3 to deliver customer portal content securely and with low latency.
-
-
-
-The architecture provides:
-
-
-
-\- HTTPS support
-
-\- Global edge caching
-
-\- Origin failover
-
-\- Cross-Region disaster recovery
-
-\- Private S3 access through OAC
-
-
-
-\---
-
-
-
-\## Architecture Diagram (Text-Based)
-
-
-
-```text
-
-Customer Browser
-
-&#x20;       |
-
-&#x20;       v
-
-Route 53
-
-&#x20;       |
-
-&#x20;       v
-
-CloudFront Distribution
-
-&#x20;       |
-
-&#x20;       +-------------------+
-
-&#x20;       |                   |
-
-&#x20;       v                   v
-
-Primary Origin        Secondary Origin
-
-S3 (af-south-1)       S3 (eu-west-1)
-
-&#x20;       |
-
-&#x20;       v
-
-Cross-Region Replication (CRR)
-
+- Use Origin Access Control with SigV4 so S3 does not need public access.
+- Redirect HTTP requests to HTTPS and use an ACM certificate in `us-east-1`, as required by CloudFront.
+- Apply a response-headers policy for HSTS and other browser security headers.
+- Cache versioned static assets with long TTLs; use invalidations only for urgent unversioned changes.
+- Attach AWS WAF for managed threat rules and rate-based controls.
+- Send CloudFront access logs to the central logging location.
+- Use an origin group only if the business has approved the secondary Region and its data-residency implications.
