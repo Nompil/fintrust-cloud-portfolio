@@ -1,0 +1,148 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: FinTrust Week 7 event-driven fraud scoring pipeline
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+  HighRiskThreshold:
+    Type: Number
+    Default: 75
+    MinValue: 0
+    MaxValue: 100
+  AlertEmail:
+    Type: String
+    Default: ''
+    Description: Optional address for high-risk alert notifications
+
+Conditions:
+  HasAlertEmail: !Not [!Equals [!Ref AlertEmail, '']]
+
+Resources:
+  PaymentDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      QueueName: !Sub fintrust-payment-dlq-${Environment}.fifo
+      FifoQueue: true
+      ContentBasedDeduplication: true
+      MessageRetentionPeriod: 1209600
+      SqsManagedSseEnabled: true
+
+  PaymentEventsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub fintrust-payment-events-${Environment}.fifo
+      FifoQueue: true
+      ContentBasedDeduplication: true
+      ReceiveMessageWaitTimeSeconds: 20
+      VisibilityTimeout: 120
+      MessageRetentionPeriod: 1209600
+      SqsManagedSseEnabled: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt PaymentDeadLetterQueue.Arn
+        maxReceiveCount: 3
+
+  TransactionAlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub fintrust-transaction-alerts-${Environment}
+      KmsMasterKeyId: alias/aws/sns
+
+  AlertEmailSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasAlertEmail
+    Properties:
+      Endpoint: !Ref AlertEmail
+      Protocol: email
+      TopicArn: !Ref TransactionAlertsTopic
+
+  FraudScorerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: ConsumePaymentsAndPublishAlerts
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                  - sqs:ReceiveMessage
+                Resource: !GetAtt PaymentEventsQueue.Arn
+              - Effect: Allow
+                Action: sns:Publish
+                Resource: !Ref TransactionAlertsTopic
+
+  FraudScorerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub fintrust-fraud-scorer-${Environment}
+      Runtime: python3.12
+      Handler: index.lambda_handler
+      Role: !GetAtt FraudScorerRole.Arn
+      MemorySize: 256
+      Timeout: 30
+      Environment:
+        Variables:
+          ALERT_TOPIC_ARN: !Ref TransactionAlertsTopic
+          HIGH_RISK_THRESHOLD: !Ref HighRiskThreshold
+      Code:
+        ZipFile: |
+          import json
+          import os
+          import boto3
+          sns = boto3.client('sns')
+          def lambda_handler(event, context):
+              failures = []
+              for record in event.get('Records', []):
+                  try:
+                      transaction = json.loads(record['body'])
+                      amount = float(transaction.get('amount', 0))
+                      score = 40 if amount > 50000 else 20 if amount > 10000 else 0
+                      if transaction.get('currency', 'ZAR') != 'ZAR':
+                          score += 20
+                      if score >= float(os.environ['HIGH_RISK_THRESHOLD']):
+                          sns.publish(
+                              TopicArn=os.environ['ALERT_TOPIC_ARN'],
+                              Subject='FinTrust high-risk transaction',
+                              Message=json.dumps({'transaction': transaction, 'risk_score': score})
+                          )
+                  except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+                      failures.append({'itemIdentifier': record.get('messageId', 'unknown')})
+              return {'batchItemFailures': failures}
+
+  PaymentEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 5
+      Enabled: true
+      EventSourceArn: !GetAtt PaymentEventsQueue.Arn
+      FunctionName: !Ref FraudScorerFunction
+      FunctionResponseTypes:
+        - ReportBatchItemFailures
+
+Outputs:
+  PaymentQueueUrl:
+    Value: !Ref PaymentEventsQueue
+  PaymentQueueArn:
+    Value: !GetAtt PaymentEventsQueue.Arn
+  AlertTopicArn:
+    Value: !Ref TransactionAlertsTopic
+  FraudScorerName:
+    Value: !Ref FraudScorerFunction

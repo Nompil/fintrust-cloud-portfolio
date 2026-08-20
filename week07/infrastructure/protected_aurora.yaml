@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: FinTrust protected Aurora PostgreSQL example for production review
+
+Parameters:
+  DatabaseUsername:
+    Type: String
+    MinLength: 1
+  DatabaseSubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+  DatabaseSecurityGroupIds:
+    Type: List<AWS::EC2::SecurityGroup::Id>
+
+Resources:
+  DatabaseSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Private subnets in two Availability Zones
+      SubnetIds: !Ref DatabaseSubnetIds
+
+  TransactionDatabase:
+    Type: AWS::RDS::DBCluster
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      BackupRetentionPeriod: 7
+      DatabaseName: fintrust
+      DBSubnetGroupName: !Ref DatabaseSubnetGroup
+      Engine: aurora-postgresql
+      ManageMasterUserPassword: true
+      MasterUsername: !Ref DatabaseUsername
+      Port: 5432
+      StorageEncrypted: true
+      VpcSecurityGroupIds: !Ref DatabaseSecurityGroupIds
+
+  DatabaseInstanceA:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBClusterIdentifier: !Ref TransactionDatabase
+      DBInstanceClass: db.r6g.large
+      Engine: aurora-postgresql
+
+  DatabaseInstanceB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBClusterIdentifier: !Ref TransactionDatabase
+      DBInstanceClass: db.r6g.large
+      Engine: aurora-postgresql
+
+Outputs:
+  DatabaseEndpoint:
+    Value: !GetAtt TransactionDatabase.Endpoint.Address
+  DatabaseReadEndpoint:
+    Value: !GetAtt TransactionDatabase.ReadEndpoint.Address

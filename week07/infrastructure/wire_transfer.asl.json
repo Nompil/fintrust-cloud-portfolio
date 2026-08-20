@@ -1,0 +1,86 @@
+{
+  "Comment": "FinTrust international wire transfer with compensating actions",
+  "StartAt": "ComplianceHold",
+  "States": {
+    "ComplianceHold": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.functions.compliance_hold",
+        "Payload.$": "$"
+      },
+      "ResultPath": "$.compliance",
+      "Next": "CurrencyConversion",
+      "Catch": [{"ErrorEquals": ["States.ALL"], "Next": "TransferFailed"}]
+    },
+    "CurrencyConversion": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.functions.currency_conversion",
+        "Payload.$": "$"
+      },
+      "ResultPath": "$.conversion",
+      "Next": "SwiftDispatch",
+      "Catch": [{"ErrorEquals": ["States.ALL"], "Next": "ReleaseComplianceHold"}]
+    },
+    "SwiftDispatch": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.functions.swift_dispatch",
+        "Payload.$": "$"
+      },
+      "ResultPath": "$.dispatch",
+      "Next": "RecipientCredit",
+      "Catch": [{"ErrorEquals": ["States.ALL"], "Next": "CancelCurrencyConversion"}]
+    },
+    "RecipientCredit": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.functions.recipient_credit",
+        "Payload.$": "$"
+      },
+      "ResultPath": "$.credit",
+      "Next": "TransferComplete",
+      "Catch": [{"ErrorEquals": ["States.ALL"], "Next": "ReverseSwiftDispatch"}]
+    },
+    "ReverseSwiftDispatch": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.functions.reverse_swift",
+        "Payload.$": "$"
+      },
+      "ResultPath": "$.reverse_dispatch",
+      "Next": "CancelCurrencyConversion"
+    },
+    "CancelCurrencyConversion": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.functions.cancel_conversion",
+        "Payload.$": "$"
+      },
+      "ResultPath": "$.cancel_conversion",
+      "Next": "ReleaseComplianceHold"
+    },
+    "ReleaseComplianceHold": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName.$": "$.functions.release_hold",
+        "Payload.$": "$"
+      },
+      "ResultPath": "$.release_hold",
+      "Next": "TransferFailed"
+    },
+    "TransferComplete": {"Type": "Succeed"},
+    "TransferFailed": {
+      "Type": "Fail",
+      "Error": "WireTransferFailed",
+      "Cause": "The transfer failed and completed its required compensating actions"
+    }
+  }
+}
