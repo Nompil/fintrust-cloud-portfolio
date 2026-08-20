@@ -1,4 +1,4 @@
-# Week 5 Day 2 - FinTrust Connectivity and Load Balancing
+# Week 5 Day 2: FinTrust Connectivity and Load Balancing
 
 This day made the networking story much more practical. The main idea was that a good AWS network is not just about subnets and routes. It is also about choosing the right service for traffic flow, balancing, and connectivity between environments.
 

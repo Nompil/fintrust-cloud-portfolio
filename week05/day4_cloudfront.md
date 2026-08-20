@@ -1,4 +1,4 @@
-# Week 5 Day 4 - CloudFront and Architecture Review
+# Week 5 Day 4: CloudFront and Architecture Review
 
 This final networking day tied the whole Week 5 story together. The important shift was from building isolated components to understanding how they work together as one secure, high-availability edge architecture.
 

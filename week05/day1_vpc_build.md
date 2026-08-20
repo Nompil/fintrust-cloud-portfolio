@@ -1,4 +1,4 @@
-# Week 5 Day 1 - FinTrust VPC Build
+# Week 5 Day 1: FinTrust VPC Build
 
 This was the first week where the networking layer started to feel real. Building the VPC made the difference between a diagram and an actual platform much clearer. The key lesson was that a VPC is not just a container; it is the control point for where traffic can go, who can reach which tier, and how the architecture stays secure.
 
@@ -80,4 +80,3 @@ The database should accept traffic only from the application security group. Thi
 ## What stood out to me
 
 The biggest lesson was that internet access is not automatic. An Internet Gateway, a route table entry, and a resource with the right network permissions all have to align. That is why VPC design feels so much like architecture rather than just configuration.
-

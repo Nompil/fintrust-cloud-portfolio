@@ -1,4 +1,4 @@
-# Week 5 Day 3 - Route 53 and Edge Services
+# Week 5 Day 3: Route 53 and Edge Services
 
 This was the point where DNS started to feel like a real part of the architecture rather than a background detail. Route 53 is not just for mapping names to IPs. It also helps control traffic flow, support resilience, and shape how users reach services across regions.
 
