@@ -23,6 +23,13 @@ def generate_report(conn, report_path):
         FROM transactions
     """).fetchone()
 
+    if row["total_count"] == 0:
+        lines.append("\nSUMMARY")
+        lines.append("  No transactions loaded")
+        report_text = "\n".join(lines)
+        report_path.write_text(report_text, encoding="utf-8")
+        return report_text
+
     lines.append("\nSUMMARY")
     lines.append(f"  Total transactions : {row['total_count']}")
     lines.append(f"  Total volume       : ZAR {row['total_volume']:,.2f}")

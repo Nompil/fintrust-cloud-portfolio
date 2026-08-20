@@ -1,18 +1,7 @@
 # Week 4 Reflection
 
-1) What I built this week (3–5 sentences):
+This week I built a local transaction pipeline that validates CSV rows, stores valid records in SQLite, and produces a daily summary. I separated loading, database access, and reporting into a package instead of keeping the entire workflow in one script.
 
-I implemented an end-to-end local ETL pipeline that reads `week04/transactions.csv`, validates and loads transactions into a local SQLite store, and generates a daily report (`daily_report.txt`). I added enrichment steps in `analyse.py` to produce `transactions_enriched.csv` and built the `fintrust_pipeline` package to separate loader, database and reporter responsibilities. I also produced a consolidated Week 4 guide exported to DOCX and HTML for portfolio submission.
+SQLite keeps the lab easy to reproduce locally, while the idempotent insert logic prevents a repeated run from duplicating transaction IDs. A production banking workload would need a managed database design with stronger concurrency, availability, backup, and security controls.
 
-2) Key technical decisions and why (3–5 sentences):
-
-SQLite was chosen for local reproducibility and minimal setup; production would use RDS Multi-AZ for concurrency and availability. The pipeline is designed to be idempotent and to validate rows before insertion to avoid duplicate or malformed data. Splitting validation, persistence, and reporting into modules improves maintainability and testability.
-
-3) What I struggled with and how I resolved it (2–4 sentences):
-
-Initial dependency issues (missing `pandas`) prevented local analysis; I fixed this by installing dependencies in a temporary virtual environment and re-running `analyse.py`. I also ran into PDF conversion limitations with `pandoc` + no LaTeX engine, so I exported the guide as DOCX and HTML instead and documented the PDF requirements.
-
-4) What I'd add to make this portfolio artifact stronger (1–2 bullet points):
-
-- Add a small integration test that runs `week04/main.py` in a temporary directory to verify end-to-end behaviour.
-- Replace SQLite with a small Dockerized RDS-compatible instance for testing concurrent access scenarios if needed.
+The smoke test now runs the core pipeline in a temporary directory and checks validation, duplicate handling, database row counts, and report output. The pandas analysis is also tested when its dependency is installed.

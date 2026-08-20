@@ -1,7 +1,4 @@
-"""
-FinTrust Bank — Broken Transaction Processor
-Week 4 Day 2 PM Lab — Find and fix the 5 bugs
-"""
+"""FinTrust transaction processor corrected during the Week 4 debugging lab."""
 
 ACCOUNTS = {
     "FT-001": {"balance": 10000.0, "daily_limit": 5000.0, "daily_used": 0.0, "frozen": False},
@@ -12,7 +9,7 @@ ACCOUNTS = {
 
 def calculate_fee(amount):
     """Calculate transaction fee: 0.5% of amount, minimum R5.00."""
-    fee = amount * 0.005              # BUG 1: should be 0.005 (0.5%), not 0.05 (5%)
+    fee = amount * 0.005
     return max(fee, 5.0)
 
 
@@ -45,9 +42,9 @@ def process_payment(sender_id, receiver_id, amount):
         raise RuntimeError(f"Insufficient funds in {sender_id}")
 
     # Process
-    sender["balance"] -= total_deducted    # BUG 2: typo — 'balance' not 'balanse'
+    sender["balance"] -= total_deducted
     sender["daily_used"] += amount
-    receiver["balance"] += amount          # receiver gets amount (not amount+fee)
+    receiver["balance"] += amount
 
     return {
         "sender": sender_id,
@@ -62,7 +59,7 @@ payments = [
     ("FT-001", "FT-002", 200.0),
     ("FT-001", "FT-002", 300.0),
     ("FT-002", "FT-001", 100.0),
-    ("FT-003", "FT-001", 500.0),   # frozen sender — should raise
+    ("FT-003", "FT-001", 500.0),   # frozen sender, should raise
 ]
 
 results = []
@@ -71,17 +68,17 @@ for sender, receiver, amt in payments:
     try:
         result = process_payment(sender, receiver, amt)
         results.append(result)
-        print(f"✓ {sender} → {receiver}: R{amt:.2f} (fee: R{result['fee']:.2f})")
+        print(
+            f"PASS {sender} -> {receiver}: "
+            f"R{amt:.2f} (fee: R{result['fee']:.2f})"
+        )
     except RuntimeError as e:
-        print(f"✗ {sender} → {receiver}: {e}")
+        print(f"FAIL {sender} -> {receiver}: {e}")
 
-# BUG 3: wrong key name
 print(f"\nFT-001 final balance: R{ACCOUNTS['FT-001']['balance']:.2f}")
 
-# BUG 4: sum should only count successful amounts, not fee
-total_sent = sum(r["amount"] for r in results)  # counts fee twice
-print(f"Total processed (excl. failed): R{total_sent:.2f}")
+total_sent = sum(r["amount"] for r in results)
+print(f"Total processed (excluding failed): R{total_sent:.2f}")
 
-# BUG 5: should print number of FAILED payments, not total payments
-failed_count = len(payments) - len(results)    # should be len(payments) - len(results)
+failed_count = len(payments) - len(results)
 print(f"Failed payments: {failed_count}")

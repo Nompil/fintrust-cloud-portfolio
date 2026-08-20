@@ -1,46 +1,64 @@
-import subprocess
-import sys
 import importlib.util
+import sqlite3
+import sys
+import tempfile
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parent
+from fintrust_pipeline.database import insert_transactions, setup_database
+from fintrust_pipeline.loader import load_csv
+from fintrust_pipeline.reporter import generate_report
 
-def run(cmd):
-    print(f"Running: {cmd}")
-    r = subprocess.run([sys.executable] + cmd.split(), cwd=BASE, capture_output=True, text=True)
-    print(r.stdout)
-    if r.stderr:
-        print(r.stderr)
-    return r
 
-def main():
-    # 1) Run main.py to populate DB and report
-    r = run("main.py")
-    if r.returncode != 0:
-        raise SystemExit("main.py failed — see output above")
+BASE_DIR = Path(__file__).resolve().parent
 
-    # 2) Ensure DB exists
-    db = BASE / "fintrust_analytics.db"
-    if not db.exists():
-        raise SystemExit("fintrust_analytics.db not created")
 
-    # 3) Check pandas availability before running analyse.py
-    if importlib.util.find_spec("pandas") is None:
-        print("Skipping analyse.py: missing dependency 'pandas'.")
-        print("To run full smoke tests, install dependencies: python -m pip install -r requirements.txt")
-        print("Partial smoke test PASSED: main.py executed and produced report.")
-        return
+def main() -> None:
+    valid_rows, invalid_rows = load_csv(BASE_DIR / "transactions.csv")
+    assert len(valid_rows) == 8, f"Expected 8 valid rows, got {len(valid_rows)}"
+    assert len(invalid_rows) == 2, f"Expected 2 invalid rows, got {len(invalid_rows)}"
 
-    # 4) Run analyse.py to produce enriched CSV
-    r2 = run("analyse.py")
-    if r2.returncode != 0:
-        raise SystemExit("analyse.py failed — see output above")
+    with tempfile.TemporaryDirectory(prefix="fintrust-smoke-") as temporary:
+        work_dir = Path(temporary)
+        db_path = work_dir / "fintrust_analytics.db"
+        report_path = work_dir / "daily_report.txt"
 
-    enriched = BASE / "transactions_enriched.csv"
-    if not enriched.exists():
-        raise SystemExit("transactions_enriched.csv not created")
+        connection = setup_database(db_path)
+        inserted, skipped = insert_transactions(connection, valid_rows)
+        assert (inserted, skipped) == (8, 0)
 
-    print("SMOKE TESTS PASSED: main.py and analyse.py executed and produced outputs.")
+        inserted_again, skipped_again = insert_transactions(connection, valid_rows)
+        assert (inserted_again, skipped_again) == (0, 8)
 
-if __name__ == '__main__':
-    main()
+        row_count = connection.execute(
+            "SELECT COUNT(*) FROM transactions"
+        ).fetchone()[0]
+        assert row_count == 8
+
+        report = generate_report(connection, report_path)
+        connection.close()
+        assert "Total transactions : 8" in report
+        assert report_path.exists()
+
+        if importlib.util.find_spec("pandas") is not None:
+            from analyse import analyse_transactions
+
+            enriched_path = work_dir / "transactions_enriched.csv"
+            analyse_transactions(db_path, enriched_path)
+            assert enriched_path.exists()
+            with enriched_path.open(encoding="utf-8") as output:
+                assert output.readline().startswith("transaction_id,")
+            print("Smoke tests passed: core pipeline and pandas analysis.")
+        else:
+            print("Smoke tests passed: core pipeline.")
+            print(
+                "Pandas analysis was skipped. Install week04/requirements.txt "
+                "to validate the optional analysis step."
+            )
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (AssertionError, sqlite3.Error) as error:
+        print(f"Smoke test failed: {error}", file=sys.stderr)
+        raise SystemExit(1) from error

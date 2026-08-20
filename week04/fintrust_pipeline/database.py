@@ -35,28 +35,37 @@ def insert_transactions(conn, valid_rows):
     skipped = 0
 
     for row in valid_rows:
-        try:
-            conn.execute(
-                """
-                INSERT INTO transactions
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    row["transaction_id"],
-                    row["account_from"],
-                    row["account_to"] or None,
-                    float(row["amount"]),
-                    row["currency"],
-                    row["type"],
-                    row["status"],
-                    row["timestamp"],
-                    loaded_at,
-                )
+        cursor = conn.execute(
+            """
+            INSERT OR IGNORE INTO transactions (
+                transaction_id,
+                account_from,
+                account_to,
+                amount,
+                currency,
+                type,
+                status,
+                timestamp,
+                loaded_at
             )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                row["transaction_id"],
+                row["account_from"],
+                row["account_to"] or None,
+                float(row["amount"]),
+                row["currency"],
+                row["type"],
+                row["status"],
+                row["timestamp"],
+                loaded_at,
+            ),
+        )
 
+        if cursor.rowcount == 1:
             inserted += 1
-
-        except sqlite3.IntegrityError:
+        else:
             skipped += 1
 
     conn.commit()
