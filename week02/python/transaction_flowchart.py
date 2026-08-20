@@ -1,4 +1,4 @@
-# transaction_flowchart.py
+"""FinTrust automated transaction decision engine."""
 
 BLOCKED_COUNTRIES = ["KP", "IR", "CU", "SY", "SD"]
 DAILY_LIMIT = 50000
@@ -8,6 +8,7 @@ REVIEW_THRESHOLD = 5000
 
 
 def assess_transaction(tx_id, customer, amount, destination, is_trusted_device):
+    """Assess one transaction and return a four-field decision record."""
 
     if destination.upper() in BLOCKED_COUNTRIES:
         return {

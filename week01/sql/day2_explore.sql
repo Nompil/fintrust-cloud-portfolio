@@ -1,63 +1,28 @@
--- Week 1 Day 2
--- SQL Introduction and Basic SELECT Statements
+-- Week 1 Day 2: Explore the FinTrust sample data
 
-USE fintrust_db;
+USE fintrust;
 
--- View all customer records
-
+-- 1. View all customers.
 SELECT *
 FROM customers;
 
--- View selected customer information
-
-SELECT
-    first_name,
-    last_name,
-    province
-FROM customers;
-
--- Display customer details with aliases
-
-SELECT
-    first_name AS 'First Name',
-    last_name AS 'Surname',
-    province AS 'Province'
-FROM customers;
-
--- View account balances with a calculated column
-
-SELECT
-    account_number,
-    account_type,
-    balance,
-    balance * 1.10 AS projected_balance
-FROM accounts;
-
--- Display first 10 customer records
-
-SELECT
-    first_name,
-    last_name,
-    email
+-- 2. List customer names and provinces alphabetically by surname.
+SELECT first_name, last_name, province
 FROM customers
-LIMIT 10;
+ORDER BY last_name;
 
--- List unique provinces
+-- 3. Show active account balances from highest to lowest.
+SELECT account_number, account_type, balance
+FROM accounts
+WHERE status = 'ACTIVE'
+ORDER BY balance DESC;
 
+-- 4. List the represented provinces.
 SELECT DISTINCT province
-FROM customers;
+FROM customers
+ORDER BY province;
 
--- Count customers
-
-SELECT COUNT(*) AS customer_count
-FROM customers;
-
--- Count accounts
-
-SELECT COUNT(*) AS account_count
-FROM accounts;
-
--- Count transactions
-
-SELECT COUNT(*) AS txn_count
-FROM transactions;
+-- 5. Calculate the total balance across active accounts.
+SELECT SUM(balance) AS total_balance
+FROM accounts
+WHERE status = 'ACTIVE';

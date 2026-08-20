@@ -1,4 +1,4 @@
-# Week 2 Day 1 - SQL JOINs Reference
+# Week 2 Day 1: SQL JOINs Reference
 
 ## The JOIN mental model
 A JOIN combines rows from two tables using a shared key. In FinTrust, the main relationship is:
@@ -99,11 +99,11 @@ Fix: join primary keys to foreign keys in the correct direction.
 ### LEFT JOIN behaving like INNER JOIN
 Problem: filtering the right table in WHERE removes unmatched rows.
 
-Fix: put the right-table filter in the ON clause when you want to keep the LEFT JOIN behavior.
+Fix: put the right-table filter in the ON clause when you want to keep the LEFT JOIN behaviour.
 
 ## Challenge queries
 1. Find customers with a cheque account balance below R 1000.
-2. List Western Cape and KwaZulu-Natal customer transactions in a 3-table join.
+2. List all transactions made by Western Cape customers in a 3-table join.
 3. Find accounts with no transactions using a LEFT JOIN.
 
 ## Portfolio note

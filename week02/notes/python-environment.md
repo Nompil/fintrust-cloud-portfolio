@@ -1,32 +1,11 @@
-\# Python Environment Setup
+# Python Environment Setup
 
+The Week 2 exercises were completed with Python and Visual Studio Code. A local virtual environment keeps project packages separate from the system Python installation.
 
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python --version
+```
 
-\## Tools Installed
-
-
-
-\- Python 3.12
-
-\- Visual Studio Code
-
-\- Python Extension
-
-\- Pylance
-
-\- indent-rainbow
-
-
-
-\## Virtual Environment
-
-
-
-Created:
-
-
-
-```text
-
-week02/venv
-
+The repository excludes `.venv/`, editor settings, caches, and environment-variable files from version control.

@@ -1,64 +1,48 @@
-\# Python Conditionals Reference
+﻿# Python Conditionals Reference
 
+## Topics Covered
 
+- if
 
-\## Topics Covered
+- elif
 
+- else
 
+- Boolean logic
 
-\- if
+- Comparison operators
 
-\- elif
+- in / not in
 
-\- else
+- Ternary expressions
 
-\- Boolean logic
+## Important Rules
 
-\- Comparison operators
+1. Order matters
 
-\- in / not in
+2. Most specific condition first
 
-\- Ternary expressions
+3. Use == not =
 
+4. End condition lines with :
 
+5. Use destination.upper() for country comparisons
 
-\## Important Rules
-
-
-
-1\. Order matters
-
-2\. Most specific condition first
-
-3\. Use == not =
-
-4\. End condition lines with :
-
-5\. Use destination.upper() for country comparisons
-
-
-
-\## FinTrust Example
-
-
+## FinTrust Example
 
 Transaction Flow Engine
 
-
-
 Decision Order:
 
+1. Blocked country
 
+2. Daily limit
 
-1\. Blocked country
+3. Invalid amount
 
-2\. Daily limit
+4. Large transaction
 
-3\. Invalid amount
+5. Review transaction
 
-4\. Large transaction
-
-5\. Review transaction
-
-6\. Approved
+6. Approved
 

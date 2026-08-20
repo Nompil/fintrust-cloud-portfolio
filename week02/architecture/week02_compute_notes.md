@@ -22,14 +22,4 @@ ECS is the better fit for container-based services that need to run continuously
 
 ## FinTrust example
 
-FinTrust can use EC2 for legacy workloads, Lambda for real-time fraud checks, and ECS for its core API services. The architecture becomes clearer when each service is matched to a workload rather than forcing one model onto everything.
-
-```mermaid
-flowchart LR
-    A[Customer transaction] --> B{Assess transaction}
-    B -- BLOCKED --> C[Reject and log]
-    B -- PENDING --> D[Send OTP]
-    B -- REVIEW --> E[Flag for analyst]
-    B -- APPROVED --> F[Continue to banking workflow]
-```
-
+FinTrust can use EC2 for legacy workloads, Lambda for real-time fraud checks, and ECS for its core API services. The architecture becomes clearer when each service is matched to a workload rather than forcing one model onto everything. The transaction flow is shown in the [Week 2 architecture diagrams PDF](../diagrams/week02_architecture_diagrams.pdf).

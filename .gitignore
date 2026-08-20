@@ -1,33 +1,28 @@
-# Python virtual environments
-.venv/
-venv/
-
-# Python cache
+# Python
 __pycache__/
-*.pyc
-*.pyo
-
-# SQLite databases
-*.db
-
-# VS Code
-.vscode/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Mac swap
-._*
-*.db
-
-venv/
+*.py[cod]
 .venv/
+.venv-*/
+venv/
+env/
+dist/
+build/
+*.egg-info/
 
-__pycache__/
-*.pyc
+# Generated runtime files
+*.db
+*.log
 
+# Local configuration
 .env
 *.env
-
+secrets.py
+*.pem
+*.sql~
 .vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+._*

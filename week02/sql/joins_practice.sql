@@ -1,75 +1,57 @@
--- =========================================================
--- Week 2 Day 1 - JOIN practice for FinTrust Bank
--- Author: FinTrust learner
--- Date: 2026-08-09
--- Purpose: Demonstrate INNER JOIN, LEFT JOIN, and multi-table joins
--- =========================================================
+-- Author: Nompilo Eugenia Mchunu
+-- Date: 20 August 2026
+-- Week 2 portfolio check-in: INNER JOIN and LEFT JOIN practice
 
--- Query 1: Show customers with their account details.
-SELECT
-    c.first_name,
-    c.last_name,
-    a.account_type,
-    a.balance
-FROM customers AS c
-INNER JOIN accounts AS a
-    ON c.customer_id = a.customer_id
-ORDER BY a.balance DESC;
+USE fintrust_db;
 
--- Query 2: Find Gauteng customers with balances above 25000.
-SELECT
-    c.first_name,
-    c.last_name,
-    c.province,
-    a.account_type,
-    a.balance
-FROM customers AS c
-INNER JOIN accounts AS a
-    ON c.customer_id = a.customer_id
-WHERE c.province = 'Gauteng'
-  AND a.balance > 25000
-ORDER BY a.balance DESC;
-
--- Query 3: Show transactions for customers using a 3-table join.
-SELECT
-    c.first_name,
-    c.last_name,
-    a.account_type,
-    t.amount,
-    t.transaction_date,
-    t.transaction_type
-FROM customers AS c
-INNER JOIN accounts AS a
-    ON c.customer_id = a.customer_id
-INNER JOIN transactions AS t
-    ON a.account_id = t.account_id
-WHERE t.transaction_type = 'debit'
-ORDER BY t.transaction_date DESC;
-
--- Query 4: Find customers who have no transactions.
+-- Match each customer to their accounts.
 SELECT
     c.customer_id,
-    c.first_name,
-    c.last_name,
-    c.province
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    a.account_id,
+    a.account_type,
+    a.balance
+FROM customers AS c
+INNER JOIN accounts AS a
+    ON c.customer_id = a.customer_id
+ORDER BY customer_name, a.account_id;
+
+-- Keep all customers and identify those who have no account.
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    a.account_id,
+    a.account_type
 FROM customers AS c
 LEFT JOIN accounts AS a
     ON c.customer_id = a.customer_id
-LEFT JOIN transactions AS t
-    ON a.account_id = t.account_id
-WHERE t.transaction_id IS NULL;
+WHERE a.account_id IS NULL
+ORDER BY customer_name;
 
--- Query 5: Show high-value transactions for selected provinces.
+-- Join customers, accounts, and transactions for a complete activity report.
 SELECT
-    c.first_name,
-    c.last_name,
-    c.province,
-    t.amount
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    a.account_number,
+    a.account_type,
+    t.transaction_id,
+    t.transaction_type,
+    t.amount,
+    t.transaction_date
 FROM customers AS c
 INNER JOIN accounts AS a
     ON c.customer_id = a.customer_id
 INNER JOIN transactions AS t
     ON a.account_id = t.account_id
-WHERE t.amount > 10000
-  AND c.province IN ('Western Cape', 'KwaZulu-Natal')
-ORDER BY t.amount DESC;
+ORDER BY t.transaction_date DESC;
+
+-- Find customers whose accounts do not yet have a transaction.
+SELECT DISTINCT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name
+FROM customers AS c
+INNER JOIN accounts AS a
+    ON c.customer_id = a.customer_id
+LEFT JOIN transactions AS t
+    ON a.account_id = t.account_id
+WHERE t.transaction_id IS NULL
+ORDER BY customer_name;

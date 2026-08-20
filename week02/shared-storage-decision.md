@@ -27,3 +27,9 @@ That combination matches the different workloads in the bank's platform.
 - File storage: EFS and FSx for shared access across services and teams
 
 This is the clearest way to think about the design: each storage type solves a different access pattern.
+
+## Shared storage architecture
+
+The shared storage layout is shown in the [Week 2 architecture diagrams PDF](diagrams/week02_architecture_diagrams.pdf).
+
+EFS serves the Linux-based Lambda and ECS workloads through NFS. FSx for Windows supplies SMB shares and Active Directory permissions. FSx for Lustre supplies the parallel throughput needed for model training and can exchange data with S3.

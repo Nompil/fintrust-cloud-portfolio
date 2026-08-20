@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-# FinTrust Bank — first Python script
+# FinTrust Bank first Python script
 customer_name = "Thabo Nkosi"
 balance = Decimal("52750.00")
 interest_rate = 0.085  # 8.5% annual

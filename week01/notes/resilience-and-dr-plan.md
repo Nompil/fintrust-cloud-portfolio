@@ -1,353 +1,44 @@
 # FinTrust Resilience and Disaster Recovery Plan
 
-FinTrust needs a layered resilience strategy that combines scaling, traffic distribution, message decoupling, and disaster recovery planning.
+FinTrust combines Multi-AZ compute, load balancing, asynchronous messaging, and a Pilot Light recovery environment. Each layer addresses a different failure mode.
 
-## Auto Scaling Group
+## Compute and traffic
 
-- Minimum capacity: 2
-- Desired capacity: 4
-- Maximum capacity: 10
-- Availability Zones: af-south-1a and af-south-1b
+- Auto Scaling Group: minimum 2, desired 4, maximum 10 instances.
+- Availability Zones: `af-south-1a` and `af-south-1b`.
+- Target tracking: maintain approximately 60% average CPU utilisation.
+- Scheduled scaling: raise capacity before predictable month-end salary-processing peaks.
+- Golden AMI: launch replacement instances with the approved patched configuration.
+- Application Load Balancer: terminate TLS, check target health, and route `/api/accounts/*`, `/api/transactions/*`, and `/api/fraud-alerts/*` to separate target groups.
 
-Scaling policy approach:
-- Target Tracking at 60% CPU for steady-state behaviour
-- Scheduled Scaling before month-end peaks
+## Resilience architecture
 
-## Application Load Balancer
+The complete resilience flow is shown in the [Week 1 architecture diagrams PDF](../diagrams/week01_architecture_diagrams.pdf).
 
-The ALB sits in front of the Auto Scaling Group and distributes traffic across healthy targets. It supports path-based routing for the accounts, transactions, and fraud-alerts services.
+The Application Load Balancer sends traffic only to healthy instances in the Auto Scaling group. RDS maintains a standby database in another Availability Zone. SQS prevents a slow fraud-scoring consumer from blocking transaction submission. SNS publishes each completed event to independent queues so notification, audit, and analytics consumers can retry and scale separately. The Pilot Light environment is activated only when a regional recovery is approved.
 
-## SQS Decoupling
+## Disaster recovery
 
-The mobile app submits payment events to an SQS queue, and the fraud-scoring service consumes them independently. This prevents a slowdown in fraud processing from blocking customer transactions.
+| Item | Decision |
+| --- | --- |
+| Primary Region | `af-south-1` (Cape Town) |
+| Recovery Region | `eu-west-1` (Ireland), subject to approved cross-border safeguards |
+| Strategy | Pilot Light |
+| Recovery point objective | 15 minutes |
+| Recovery time objective | Less than 1 hour |
+| Recovery data | Encrypted database backups and approved S3 replicas |
+| Failover | Scale recovery compute, restore or promote data services, validate controls, then update Route 53 |
 
-## SNS Fan-Out
+The programme scenario permits encrypted disaster-recovery copies in Ireland under suitable safeguards. A real implementation requires formal legal, security, and data-governance approval before any cross-border replication.
 
-A transaction-completed event is published to an SNS topic and fan-out to the notification, audit logging, and analytics consumers.
+## Failure mapping
 
-## Disaster Recovery
+| Failure | Defence | Expected result |
+| --- | --- | --- |
+| EC2 instance fails | ASG health checks and golden AMI | A replacement instance launches automatically |
+| One Availability Zone fails | Multi-AZ ASG and ALB | Traffic goes only to healthy targets while capacity rebalances |
+| Fraud scoring slows down | SQS | Requests wait durably without tightly coupling the services |
+| Month-end traffic triples | Scheduled scaling plus target tracking | Capacity is available before and during the predictable peak |
+| Primary Region is unavailable | Pilot Light recovery runbook | Restore service within the approved RTO and RPO targets |
 
-FinTrust should use a Pilot Light strategy with encrypted backups and a minimal standby environment in eu-west-1. This supports an RPO of around 15 minutes and an RTO below one hour while avoiding the cost of a fully active secondary environment.
-
-
-
-\## Benefits
-
-
-
-\- Independent processing
-
-\- Reduced service coupling
-
-\- Easier scaling
-
-
-
-\---
-
-
-
-\# Disaster Recovery Strategy
-
-
-
-\## Primary Region
-
-
-
-Africa (Cape Town)
-
-
-
-```text
-
-af-south-1
-
-```
-
-
-
-\## Disaster Recovery Region
-
-
-
-Europe (Ireland)
-
-
-
-```text
-
-eu-west-1
-
-```
-
-
-
-\## DR Model
-
-
-
-Pilot Light Disaster Recovery
-
-
-
-\## Components
-
-
-
-\- Encrypted nightly database snapshots
-
-\- S3 data replication
-
-\- Minimal standby database
-
-\- Route 53 failover capability
-
-
-
-\---
-
-
-
-\# Recovery Objectives
-
-
-
-\## RPO (Recovery Point Objective)
-
-
-
-15 minutes
-
-
-
-Maximum acceptable data loss after a disaster.
-
-
-
-\## RTO (Recovery Time Objective)
-
-
-
-Less than 1 hour
-
-
-
-Maximum acceptable service recovery time.
-
-
-
-\---
-
-
-
-\# Failure Scenarios
-
-
-
-\## Scenario 1
-
-
-
-\### Failure
-
-
-
-EC2 instance crashes
-
-
-
-\### Protection
-
-
-
-Auto Scaling Group health checks
-
-
-
-\### Outcome
-
-
-
-Replacement instance launches automatically from the Golden AMI.
-
-
-
-\---
-
-
-
-\## Scenario 2
-
-
-
-\### Failure
-
-
-
-Availability Zone outage
-
-
-
-\### Protection
-
-
-
-Multi-AZ Auto Scaling Group and ALB
-
-
-
-\### Outcome
-
-
-
-Traffic shifts to healthy resources in another AZ.
-
-
-
-\---
-
-
-
-\## Scenario 3
-
-
-
-\### Failure
-
-
-
-Fraud-scoring service overloaded
-
-
-
-\### Protection
-
-
-
-SQS Queue
-
-
-
-\### Outcome
-
-
-
-Transactions continue while requests wait safely in the queue.
-
-
-
-\---
-
-
-
-\## Scenario 4
-
-
-
-\### Failure
-
-
-
-Month-end transaction volume triples
-
-
-
-\### Protection
-
-
-
-Scheduled Scaling
-
-
-
-\### Outcome
-
-
-
-Capacity increases before the traffic spike begins.
-
-
-
-\---
-
-
-
-\## Scenario 5
-
-
-
-\### Failure
-
-
-
-Regional outage in af-south-1
-
-
-
-\### Protection
-
-
-
-Pilot Light DR in eu-west-1
-
-
-
-\### Outcome
-
-
-
-Standby infrastructure scales up and Route 53 redirects traffic.
-
-
-
-Target:
-
-
-
-\- RPO: 15 minutes
-
-\- RTO: Less than 1 hour
-
-
-
-\---
-
-
-
-\# Architecture Summary
-
-
-
-Users
-
-→ Route 53
-
-→ CloudFront
-
-→ Application Load Balancer
-
-→ Auto Scaling Group
-
-→ Transaction Services
-
-
-
-Additional Services:
-
-
-
-\- Amazon SQS
-
-\- Amazon SNS
-
-\- Amazon S3
-
-\- Amazon RDS PostgreSQL
-
-\- Disaster Recovery Region (eu-west-1)
-
-
-
-This design supports FinTrust's goals of high availability, compliance, fraud detection, fault tolerance and customer growth.
-
+RTO and RPO are objectives, not guarantees. Recovery exercises must measure whether the design actually meets them.

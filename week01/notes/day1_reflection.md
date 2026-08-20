@@ -1,7 +1,3 @@
 # Week 1 Day 1 Reflection
 
-Week 1 introduced the programme structure and the FinTrust case study in a way that made the learning journey feel practical rather than abstract. I gained a clearer understanding of how cloud architecture, SQL, and professional portfolio work connect across the full course.
-
-The main challenge was getting comfortable with the GitHub workflow and understanding how each weekly artifact contributes to the larger portfolio. Once I organised the files by week and purpose, the process became much clearer.
-
-The most important takeaway was that every design decision in this programme has a reason. Whether it is a region choice, a database constraint, or a documentation decision, the goal is to build work that is clear, traceable, and professional.
+Today I learned how cloud architecture, SQL, Python, and the GitHub portfolio connect through the FinTrust case study. The GitHub workflow was the part I needed to work through carefully, especially where each daily artifact belongs and how it becomes part of the weekly check-in. Organising the files by week and purpose made the process clearer. Going into Day 2, my question is how an architect chooses an AWS Region when compliance, proximity, service availability, and cost all need to be considered.

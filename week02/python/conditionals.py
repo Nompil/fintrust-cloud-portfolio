@@ -1,6 +1,10 @@
+"""Week 2 Day 4 conditional logic exercises."""
+
+
 # Exercise 1
 
 def classify_transaction(amount):
+    """Classify an amount using the exercise brackets."""
     if 0 < amount <= 100:
         return "MICRO"
     elif 100 < amount <= 1000:
@@ -21,6 +25,7 @@ print(classify_transaction(-5))
 # Exercise 2
 
 def get_interest_rate(credit_score):
+    """Return the annual interest rate for a credit-score band."""
     if credit_score >= 750:
         return 7.5
     elif credit_score >= 700:
@@ -38,6 +43,7 @@ print(get_interest_rate(800))
 # Exercise 3
 
 def atm_withdraw(balance, amount):
+    """Validate an ATM withdrawal and return its outcome."""
     if amount <= 0:
         return (False, "Invalid amount")
     elif amount > 5000:
@@ -55,6 +61,7 @@ print(atm_withdraw(500, 600))
 # Exercise 4
 
 def tag_transaction(tx_type, merchant_category, amount):
+    """Apply the first matching transaction tag rule."""
     if tx_type == "REFUND":
         return "REFUND"
     elif merchant_category == "GAMBLING":
