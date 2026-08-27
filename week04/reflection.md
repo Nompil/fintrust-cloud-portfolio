@@ -1,7 +1,3 @@
 # Week 4 Reflection
 
-This week I built a local transaction pipeline that validates CSV rows, stores valid records in SQLite, and produces a daily summary. I separated loading, database access, and reporting into a package instead of keeping the entire workflow in one script.
-
-SQLite keeps the lab easy to reproduce locally, while the idempotent insert logic prevents a repeated run from duplicating transaction IDs. A production banking workload would need a managed database design with stronger concurrency, availability, backup, and security controls.
-
-The smoke test now runs the core pipeline in a temporary directory and checks validation, duplicate handling, database row counts, and report output. The pandas analysis is also tested when its dependency is installed.
+If two processes write to the same SQLite file at exactly the same time, one writer can hold the database lock while the other waits or fails with a `database is locked` error. The transaction ID primary key prevents duplicate rows, but a report could still run before the other process finishes and show an incomplete view of that batch. RDS PostgreSQL handles concurrent transactions with a database server, connection management and MVCC instead of a single local file lock. Multi-AZ adds a synchronously replicated standby and automatic failover, but it does not create a second writable primary or remove the need for correct transaction handling. I would keep the validation and idempotent insert pattern, then add explicit transactions, retry rules and connection pooling when moving the pipeline to RDS.
