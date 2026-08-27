@@ -1,37 +1,63 @@
-# Week 5 Day 2: FinTrust Connectivity and Load Balancing
+# Day 2: Load Balancing and Connectivity
 
-This day made the networking story much more practical. The main idea was that a good AWS network is not just about subnets and routes. It is also about choosing the right service for traffic flow, balancing, and connectivity between environments.
+The FinTrust web entry point uses an Application Load Balancer because the routing decisions depend on the URL path. The ALB terminates HTTPS and sends each request to the correct group of ECS tasks.
 
-## Load balancer choice
+## Target groups
 
-### Application Load Balancer
+| Target group | Protocol and port | Health check | Expected result |
+| --- | --- | --- | --- |
+| `api-targets` | HTTP 8080 | `/api/health` | HTTP 200 |
+| `portal-targets` | HTTP 8080 | `/portal/health` | HTTP 200 |
 
-The Application Load Balancer is the correct fit for FinTrust's portal and API traffic because it supports Layer 7 routing. That means it can inspect the URL path and send requests to the correct target group.
+Both target groups use IP targets so they can register ECS tasks. Health checks prevent the ALB from sending customer traffic to an unhealthy task.
 
-Example:
+## ALB configuration
 
-- /api/* -> api-targets
-- /portal/* -> portal-targets
+| Setting | Value |
+| --- | --- |
+| Name | `fintrust-alb` |
+| Scheme | Internet facing |
+| Subnets | Both public subnets |
+| Security Group | `alb-sg` |
+| HTTPS listener | Port 443 |
+| HTTP listener for the lab | Port 80 |
+| Default action | Forward to `portal-targets` |
 
-This is the right pattern for a modern web application with multiple services behind one entry point.
+## Listener rules
 
-## ALB path-based routing
+| Priority | Condition | Action |
+| --- | --- | --- |
+| 10 | Path is `/api/*` | Forward to `api-targets` |
+| 20 | Path is `/portal/*` | Forward to `portal-targets` |
+| Default | No earlier rule matched | Forward to `portal-targets` |
 
-The ALB uses listener rules to forward traffic based on the request path. This is useful because the portal and API services can share one public entry point while still being routed separately.
+For a production deployment, port 80 should redirect to HTTPS. The certificate for port 443 would be stored in AWS Certificate Manager.
 
-## NAT high availability
+## Request path for `/api/transfer`
 
-A single NAT Gateway is not enough for a resilient Multi-AZ design. The correct pattern is one NAT Gateway per Availability Zone. That way, if one AZ is disrupted, the private subnets in the other AZ can still reach the internet.
+1. Route 53 returns an alias to the ALB or CloudFront distribution.
+2. The client establishes an HTTPS connection.
+3. The ALB listener evaluates the path rules.
+4. `/api/*` matches the API rule.
+5. The ALB chooses a healthy target from `api-targets`.
+6. The ECS task processes the transfer and connects to the data tier through `db-sg`.
+7. The response returns to the customer through the ALB.
 
-## Connectivity decision summary
+## Connectivity worksheet
 
-| Requirement | Service | Why |
-|---|---|---|
-| Connect three VPCs with central routing | Transit Gateway | Supports transitive routing and hub-and-spoke design |
-| Provide private access to a SaaS service | AWS PrivateLink | Gives private service access without full VPC connectivity |
-| Connect an on-premises mainframe with dedicated low-latency access | AWS Direct Connect | Provides a private, predictable connection |
-| Give remote developers access to a dev VPC | Client VPN | Designed for individual user access |
+| Scenario | Selected service | Reason |
+| --- | --- | --- |
+| Production, development and audit VPCs need shared egress | Transit Gateway | It provides a central hub and avoids a growing peering mesh |
+| FinTrust consumes a private fraud service from a SaaS provider | AWS PrivateLink | It exposes only the service and does not join the two networks |
+| The on-premises mainframe needs consistent private connectivity | AWS Direct Connect | A dedicated connection provides more predictable performance than an internet VPN |
+| Ten engineers need temporary private access | AWS Client VPN | It provides managed, user-based remote access without a site appliance |
+
+VPC peering would be awkward for the three-account design because every required pair needs its own connection and peering is not transitive. Transit Gateway gives the accounts one central point for routing and control.
+
+Direct Connect and Site-to-Site VPN solve different needs. Direct Connect is suitable for steady, business-critical traffic that needs predictable performance. A Site-to-Site VPN is quicker to establish and useful as an encrypted backup path, but it crosses the public internet.
+
+PrivateLink is preferable to peering for the SaaS service because FinTrust receives access to a specific endpoint service rather than routes to the provider's whole VPC. This reduces network exposure and avoids overlapping CIDR concerns.
 
 ## Reflection
 
-The biggest takeaway from this day was that networking decisions are heavily shaped by the type of traffic and the growth pattern of the environment. A single solution rarely fits every need, which is why AWS offers multiple connectivity options rather than one universal answer.
+Path-based routing makes one ALB useful for more than one application component. The connectivity exercise also showed me that the correct service depends on the relationship being created: Transit Gateway joins networks at scale, PrivateLink publishes one service, Direct Connect links a site, and Client VPN connects individual users.

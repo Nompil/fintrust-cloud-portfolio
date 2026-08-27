@@ -1,59 +1,55 @@
-# Week 5 Day 4: CloudFront and Architecture Review
+# Day 4: CloudFront and Origin Access Control
 
-This final networking day tied the whole Week 5 story together. The important shift was from building isolated components to understanding how they work together as one secure, high-availability edge architecture.
+CloudFront provides the public entry point for static portal content stored in a private S3 bucket. Origin Access Control keeps the bucket private while allowing the distribution to sign its origin requests.
 
-## CloudFront distribution setup
+## Distribution configuration
 
-FinTrust uses CloudFront in front of its portal assets so static content can be served quickly from edge locations while keeping the origin private.
+| Setting | Configuration |
+| --- | --- |
+| Static origin | Private S3 bucket |
+| Origin access | Origin Access Control with signed requests |
+| Default root object | `index.html` |
+| Viewer protocol policy | Redirect HTTP to HTTPS |
+| Default cache behaviour | Static portal content from S3 |
+| `/api/*` behaviour | ALB origin with `CachingDisabled` |
+| S3 public access | Block Public Access enabled |
+| Custom certificate | AWS Certificate Manager certificate in `us-east-1` |
 
-### Distribution design
+The S3 bucket policy grants `s3:GetObject` to the CloudFront service principal. Its condition limits access to the ARN of the intended distribution. There is no public principal in the policy.
 
-| Component | Configuration |
-|---|---|
-| Origin | Private S3 bucket for portal assets |
-| Access model | Origin Access Control (OAC) |
-| Viewer policy | Redirect HTTP to HTTPS |
-| Default root object | index.html |
-| API behaviour | /api/* with CachingDisabled |
+## Verification
 
-## OAC vs OAI
+The setup is correct when the direct S3 object URL returns access denied and the CloudFront URL returns the object successfully. This proves that customers use the distribution and that the bucket is not publicly readable.
 
-Origin Access Control is the modern and recommended approach for private S3 access through CloudFront. It allows CloudFront to sign requests to S3 and gives the bucket policy a clear trust relationship with the distribution.
+## Origin Access Control and Origin Access Identity
 
-Why OAC is preferred:
+OAC is the current approach and supports signed requests using Signature Version 4. It also supports more S3 scenarios than the older OAI model. OAI remains relevant when maintaining an existing distribution, but I would choose OAC for a new FinTrust distribution.
 
-- It is the current AWS-recommended method for new distributions
-- It supports KMS-encrypted S3 content
-- It is more flexible and clearer than the older OAI model
+Signed URLs are suitable for access to one protected file. Signed cookies are more convenient when a user needs access to several restricted files without placing a signature on every link.
 
-## Signed URLs and signed cookies
+## Failover timing
 
-For FinTrust's customer statement PDFs, a signed URL is the right choice because each document is a specific file and the access window should be controlled per link.
+| Event | Approximate time |
+| --- | --- |
+| Primary health check fails once | 30 seconds |
+| Three consecutive failures mark it unhealthy | About 90 seconds |
+| Route 53 starts returning the secondary record | After health status changes |
+| Clients receive the secondary answer | Depends on their remaining DNS cache time |
 
-- Signed URL: best for one file, one expiry window
-- Signed Cookie: better for a group of protected files or a subscriber experience
+A TTL of 60 seconds gives a reasonable balance between response time and DNS query volume for this design. After the primary has recovered and passed its health checks, Route 53 can return traffic to it. The recovery should be observed before failback to avoid switching repeatedly between Regions.
 
-## Cache invalidation
+## Other practical decisions
 
-CloudFront can keep serving older content until its TTL expires. When an urgent fix is required, the fastest option is an invalidation for the specific path.
+CloudFront can sit in front of the ALB for dynamic web traffic. The `/api/*` behaviour should forward the required headers, cookies and query strings, and use the managed `CachingDisabled` policy when responses must not be cached.
 
-Example:
+If `/styles/main.css` changes and the existing cached object must be replaced immediately, the invalidation path is `/styles/main.css`. Versioned file names are usually better for routine releases because they avoid repeated invalidations.
 
-- /styles/main.css -> immediate cache purge for that path
+## Architecture review
 
-This is often faster and cleaner than waiting for the full TTL to expire.
+The complete design includes Route 53, CloudFront, a private S3 origin using OAC, an ALB in two public subnets, ECS tasks in two private application subnets, and RDS, ElastiCache and DocumentDB in private data subnets. Each Availability Zone has its own NAT Gateway. Gateway endpoints provide private routes to S3 and DynamoDB. The Security Group chain is `alb-sg` to `app-sg` to `db-sg`. Global Accelerator is shown as an alternative entry path for applications that need static anycast IP addresses rather than caching.
 
-## Full Week 5 architecture summary
-
-The Week 5 network architecture now includes:
-
-- A Multi-AZ VPC with public, application, and data tiers
-- Internet Gateway and NAT Gateways for controlled traffic flow
-- ALB path-based routing for portal and API traffic
-- Route 53 for domain routing, failover, and weighted traffic
-- CloudFront with OAC in front of private S3 assets
-- A secure layered Security Group model to keep tiers isolated
+[Open the detailed Week 5 network architecture](diagrams/week05_vpc_architecture.pdf)
 
 ## Reflection
 
-The main lesson from this week was that networking is really about trade-offs. The right design depends on whether the requirement is about resiliency, performance, security, or cost. The strongest architectures are the ones that combine these concerns deliberately rather than treating them as separate problems.
+Keeping S3 private was the most important part of the CloudFront exercise. OAC gives CloudFront permission without exposing the bucket. I also learned that failover time is not controlled by one setting: health-check intervals, failure thresholds and DNS caching all contribute to the customer experience.

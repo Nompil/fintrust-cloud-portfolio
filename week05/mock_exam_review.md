@@ -1,40 +1,56 @@
 # Week 5 Mock Exam Review
 
-## Score
+My target for the timed knowledge check was at least 10 out of 15. I used the review to group the networking topics that need more practice instead of memorising isolated service names.
 
-My target for this week was 10/15 or better. I reviewed the questions carefully and used the answer key to identify the topics that need the most attention.
+## Answer review
 
-## Questions I found difficult
+| Question | Answer | Topic |
+| ---: | :---: | --- |
+| 1 | B | NAT Gateway for private subnet internet access |
+| 2 | B | Stateless NACL return traffic |
+| 3 | B | One NAT Gateway per Availability Zone |
+| 4 | B | Transit Gateway for several VPCs |
+| 5 | C | ALB for path-based HTTP routing |
+| 6 | B | NLB for high-performance TCP traffic |
+| 7 | C | Alias A record for an AWS load balancer |
+| 8 | B | Latency-based routing |
+| 9 | B | Route 53 health check for failover |
+| 10 | B | CloudFront OAC and a restricted bucket policy |
+| 11 | B | CloudFront cache invalidation |
+| 12 | C | Direct Connect for predictable private connectivity |
+| 13 | C | NACL deny rule for a CIDR block |
+| 14 | B | Global Accelerator for static anycast IP addresses |
+| 15 | B | ALB, Route 53 failover and CloudFront with OAC |
 
-The most challenging questions were the ones around:
+## Questions marked for revision
 
-- NACL statelessness and ephemeral ports
-- Route 53 Alias vs CNAME at the zone apex
-- OAC setup for private S3 access via CloudFront
-- The difference between CloudFront and Global Accelerator
+### Question 2: Network ACL return traffic
 
-## Revision notes
+A NACL is stateless, so both directions require matching rules. Allowing the inbound service port is not enough. The response must be allowed to return through the client's ephemeral port range.
 
-### VPC and NAT
+### Question 7: Alias A and CNAME
 
-A NAT Gateway is required for private subnets that need outbound internet access without being directly reachable from the internet. The correct highly available pattern is one NAT Gateway per Availability Zone, not a single shared NAT Gateway.
+An Alias A record can target supported AWS resources and works at the hosted-zone apex. A CNAME points one hostname to another and cannot be placed at the apex.
 
-### Security Groups vs NACLs
+### Question 10: Private S3 with CloudFront
 
-Security Groups are stateful and resource-level. Network ACLs are stateless and subnet-level. If a NACL allows inbound traffic but not the corresponding outbound response traffic on ephemeral ports, clients will not receive a reply.
+Block Public Access remains enabled. OAC signs CloudFront requests, and the bucket policy grants read access only to the selected distribution.
 
-### Route 53
+### Question 14: CloudFront and Global Accelerator
 
-An Alias record is the correct choice for the root domain when pointing to an AWS resource such as an ALB or CloudFront distribution. A CNAME cannot be used at the zone apex.
+CloudFront caches HTTP content at edge locations. Global Accelerator provides static anycast IP addresses and carries TCP or UDP traffic across the AWS global network. The requirement for static IP addresses is the deciding clue.
 
-### CloudFront and OAC
+## Confidence check
 
-CloudFront should be configured with OAC when the origin is a private S3 bucket and access should be restricted to CloudFront only. This is the modern and recommended pattern for secure private content delivery.
+| Area | Confidence | Revision action |
+| --- | --- | --- |
+| VPC CIDR and subnet routing | Green | Practise reading route tables |
+| Security Groups and NACLs | Amber | Trace inbound and return traffic |
+| Load balancer selection | Green | Compare ALB and NLB scenarios |
+| VPC connectivity | Amber | Match each service to its scope |
+| Route 53 policies | Amber | Practise policy signal words |
+| CloudFront and OAC | Amber | Rebuild the request and permission path |
 
-### CloudFront vs Global Accelerator
+## Key takeaway
 
-CloudFront is the better choice for cacheable content and edge delivery. Global Accelerator is the better choice for non-HTTP traffic and stable IP-based routing over the AWS backbone.
-
-## Final takeaway
-
-The Week 5 topics now feel much more connected. The VPC, routing, DNS, and edge services all fit together as one networking platform rather than separate concepts.
+The strongest method for these questions is to identify the exact requirement first. Path rules point to ALB, static anycast IP addresses point to Global Accelerator, private access to one provider service points to PrivateLink, and an explicit network deny points to a NACL.

@@ -1,82 +1,73 @@
-# Week 5 Day 1: FinTrust VPC Build
+# Day 1: VPC Build
 
-This was the first week where the networking layer started to feel real. Building the VPC made the difference between a diagram and an actual platform much clearer. The key lesson was that a VPC is not just a container; it is the control point for where traffic can go, who can reach which tier, and how the architecture stays secure.
+The FinTrust network uses one VPC across two Availability Zones. Public, application and data subnets are separated so that each tier has only the routes it needs.
 
-## FinTrust VPC design
+## VPC plan
 
-| Resource | Configuration |
-|---|---|
-| VPC name | fintrust-vpc |
-| Region | af-south-1 |
-| CIDR | 10.0.0.0/16 |
-| Availability Zones | af-south-1a and af-south-1b |
+| Item | Configuration |
+| --- | --- |
+| VPC name | `fintrust-vpc` |
+| IPv4 CIDR | `10.0.0.0/16` |
+| Availability Zones | `af-south-1a`, `af-south-1b` |
+| DNS hostnames | Enabled |
+| DNS resolution | Enabled |
 
-## Subnet layout
+## Subnet allocation
 
-| Tier | Subnet | CIDR | AZ |
-|---|---|---|---|
-| Public | fintrust-public-1a | 10.0.0.0/24 | af-south-1a |
-| Public | fintrust-public-1b | 10.0.1.0/24 | af-south-1b |
-| Application | fintrust-app-1a | 10.0.10.0/24 | af-south-1a |
-| Application | fintrust-app-1b | 10.0.11.0/24 | af-south-1b |
-| Data | fintrust-data-1a | 10.0.20.0/24 | af-south-1a |
-| Data | fintrust-data-1b | 10.0.21.0/24 | af-south-1b |
+| Tier | Availability Zone | CIDR | Purpose |
+| --- | --- | --- | --- |
+| Public | `af-south-1a` | `10.0.0.0/24` | ALB and NAT Gateway |
+| Public | `af-south-1b` | `10.0.1.0/24` | ALB and NAT Gateway |
+| Application | `af-south-1a` | `10.0.10.0/24` | ECS workloads |
+| Application | `af-south-1b` | `10.0.11.0/24` | ECS workloads |
+| Data | `af-south-1a` | `10.0.20.0/24` | Database resources |
+| Data | `af-south-1b` | `10.0.21.0/24` | Database resources |
 
-## Route tables and gateways
+## Route tables and internet access
 
-### Public route table
+An Internet Gateway is attached to the VPC. Each public subnet uses the public route table, while the private subnets use a route table for their own Availability Zone.
 
-- Default route: 0.0.0.0/0 -> Internet Gateway (fintrust-igw)
-- Associated with both public subnets
-- Used for internet-facing edge resources such as the ALB and NAT gateways
+| Route table | Subnet associations | Default route |
+| --- | --- | --- |
+| `fintrust-public-rt` | Both public subnets | `0.0.0.0/0` to the Internet Gateway |
+| `fintrust-private-rt-1a` | App and data subnets in `af-south-1a` | `0.0.0.0/0` to NAT Gateway 1a |
+| `fintrust-private-rt-1b` | App and data subnets in `af-south-1b` | `0.0.0.0/0` to NAT Gateway 1b |
 
-### Private route tables
+There is one NAT Gateway in each public subnet. A private subnet routes through the NAT Gateway in the same Availability Zone. This keeps outbound access available if one Availability Zone fails and avoids unnecessary cross-zone traffic charges.
 
-- One private route table per AZ
-- Route 0.0.0.0/0 -> NAT gateway in the same AZ
-- Application and data subnets are associated with the private route table for their AZ
+The public subnets are public because their route table points to the Internet Gateway. The private subnets do not have that route. A public IP address alone does not make a subnet public.
 
-### NAT design
+## Security Group chain
 
-- One NAT Gateway in each public subnet
-- This avoids a single point of failure if one AZ experiences issues
+| Security Group | Inbound rule | Source |
+| --- | --- | --- |
+| `alb-sg` | HTTPS on TCP 443 | `0.0.0.0/0` |
+| `app-sg` | Application traffic on TCP 8080 | `alb-sg` |
+| `db-sg` | PostgreSQL on TCP 5432 | `app-sg` |
+| `db-sg` | Redis on TCP 6379 | `app-sg` |
+| `db-sg` | MongoDB on TCP 27017 | `app-sg` |
 
-## Security groups
+The rules reference Security Groups instead of application IP addresses. This means a new ECS task receives the correct access without changing the database rules.
 
-| Security group | Purpose | Key rule logic |
-|---|---|---|
-| alb-sg | Internet-facing entry point | Allow HTTPS 443 from 0.0.0.0/0 |
-| app-sg | Application tier | Allow TCP 8080 from alb-sg only |
-| db-sg | Data tier | Allow 5432, 6379, and 27017 from app-sg only |
+## Security Group and NACL challenge
 
-## Security Group vs NACL challenge
+| Requirement | Control | Reason |
+| --- | --- | --- |
+| Block traffic from `41.0.0.0/8` | Network ACL deny rule | Security Groups cannot create explicit deny rules |
+| Allow only the ALB to reach ECS | `app-sg` inbound rule | A Security Group can reference `alb-sg` directly |
+| Allow only the app tier to reach databases | `db-sg` inbound rules | The source is limited to `app-sg` |
 
-### 1. Block traffic from a malicious IP range
+Network ACLs are stateless. If the subnet NACL permits an inbound connection, the matching outbound response must also be permitted. For a client connection, the response normally returns to an ephemeral port in the range `1024` to `65535`.
 
-Answer: NACL DENY rule on the app subnet.
+## Request path
 
-Security Groups cannot deny traffic explicitly. They only allow what is permitted. If the requirement is to block an entire IP range, the correct control is a Network ACL DENY rule at the subnet boundary.
+1. A customer resolves the application name through Route 53.
+2. The request reaches CloudFront over HTTPS.
+3. A dynamic request is forwarded to the public Application Load Balancer.
+4. The ALB sends the request to a healthy ECS task in a private application subnet.
+5. The task connects to the required data service through `db-sg`.
+6. The response returns through the same controlled path.
 
-### 2. Allow the ALB to forward requests to containers on port 8080
+## Reflection
 
-Answer: Security Group rule on app-sg.
-
-This is a resource-level, stateful control. The ALB should be allowed to reach the application tier on the required port, and the SG makes that easy without opening the app tier to the whole internet.
-
-### 3. Keep the database tier reachable only from the application tier
-
-Answer: Security Group rule on db-sg.
-
-The database should accept traffic only from the application security group. This gives the data tier a clean trust boundary and avoids exposing it directly to the ALB or the internet.
-
-## Traffic path reflection
-
-1. A user sends an HTTPS request from the browser to the FinTrust portal.
-2. The request reaches the public subnet through the Internet Gateway.
-3. The Application Load Balancer accepts the request and forwards it to the app tier.
-4. The application tier reaches the data tier through the appropriate security group rules.
-5. The data tier remains private and is not directly reachable from the internet.
-
-## What stood out to me
-
-The biggest lesson was that internet access is not automatic. An Internet Gateway, a route table entry, and a resource with the right network permissions all have to align. That is why VPC design feels so much like architecture rather than just configuration.
+The most important lesson was that a subnet is classified by its routing, not its name. I also understood why a NAT Gateway belongs in a public subnet even though it provides outbound access for private resources. Using Security Group references makes the three-tier design easier to maintain than rules based on changing IP addresses.

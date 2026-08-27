@@ -1,21 +1,24 @@
-# Week 5: AWS Networking
+# Week 5: Networking and Content Delivery
 
-Week 5 develops the network and edge-delivery layer for FinTrust. The design keeps the application and database tiers private while exposing only the load balancer through public subnets.
+Week 5 brings the FinTrust network together across two Availability Zones. The work covers VPC design, traffic controls, load balancing, private connectivity, DNS routing and secure content delivery.
 
-## Deliverables
+## Portfolio work
 
-- [VPC build](day1_vpc_build.md)
-- [Connectivity choices](day2_connectivity.md)
-- [Route 53 routing](day3_route53.md)
-- [CloudFront design](day4_cloudfront.md)
-- [VPC architecture diagram PDF](diagrams/week05_vpc_architecture.pdf)
-- [Mock exam review](mock_exam_review.md)
+| File | Evidence |
+| --- | --- |
+| [Day 1 VPC build](day1_vpc_build.md) | CIDR plan, route tables, Security Group chain and NACL challenge |
+| [Day 2 connectivity](day2_connectivity.md) | ALB path rules, target groups and four connectivity scenarios |
+| [Day 3 Route 53](day3_route53.md) | Hosted-zone records, seven routing policies and a canary rollout |
+| [Day 4 CloudFront](day4_cloudfront.md) | OAC configuration, failover timing and architecture review |
+| [Mock exam review](mock_exam_review.md) | Answer review, revision notes and confidence check |
 
-## Key design choices
+## Supporting evidence
 
-- `af-south-1` is the primary Region.
-- Public and private subnets span two Availability Zones.
-- Each private application subnet uses a NAT Gateway in the same Availability Zone.
-- The internet-facing Application Load Balancer is the only public entry point to the application tier.
-- Security groups allow only the traffic required between the load balancer, application, and database tiers.
-- Route 53 and CloudFront provide DNS routing, caching, TLS, and edge delivery.
+| File | Purpose |
+| --- | --- |
+| [Week 5 network architecture](diagrams/week05_vpc_architecture.pdf) | Detailed two-AZ design and network controls |
+| [Weekly reflection](reflection.md) | Main lessons and design decisions |
+
+## Design summary
+
+The VPC uses the `10.0.0.0/16` range with public, application and data subnets in `af-south-1a` and `af-south-1b`. Internet traffic reaches CloudFront and the ALB, while application and data resources remain in private subnets. NAT Gateways provide resilient outbound access, gateway endpoints keep S3 and DynamoDB traffic on the AWS network, and Security Group references enforce the application path. Route 53 supplies weighted and failover routing, while OAC protects the private S3 origin.

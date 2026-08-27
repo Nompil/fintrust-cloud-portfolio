@@ -1,29 +1,59 @@
-# Week 5 Day 3: Route 53 and Edge Services
+# Day 3: Route 53
 
-This was the point where DNS started to feel like a real part of the architecture rather than a background detail. Route 53 is not just for mapping names to IPs. It also helps control traffic flow, support resilience, and shape how users reach services across regions.
+The lab design uses a public hosted zone called `fintrust-lab.internal`. The name is suitable for a classroom exercise, although a real public application would use a registered public domain.
 
-## Route 53 record choices
+## Hosted zone records
 
-| Scenario | Record type / policy | Reason |
-|---|---|---|
-| Point the root domain to an ALB | Alias A record | Works at the zone apex and is free and auto-updating |
-| Point a subdomain to an ALB | CNAME | Works well for subdomains |
-| Split traffic for a canary rollout | Weighted routing | Allows percentage-based distribution |
-| Route to a backup site if the primary fails | Failover routing | Uses health checks to switch traffic automatically |
-| Send users to the lowest-latency region | Latency routing | Uses network performance rather than geography alone |
-| Route based on country | Geolocation routing | Useful for regulatory or regional access rules |
+| Record | Type | Target | Purpose |
+| --- | --- | --- | --- |
+| `app.fintrust-lab.internal` | Alias A | `fintrust-alb` | Main application entry point |
+| `api.fintrust-lab.internal` | CNAME | ALB DNS name | API lab record |
+| `canary.fintrust-lab.internal` | Weighted Alias A | Production ALB, weight 90 | Most traffic remains on production |
+| `canary.fintrust-lab.internal` | Weighted Alias A | Canary ALB, weight 10 | A small share tests the new release |
+| `test.fintrust-lab.internal` | A | Lab test address | Confirms record creation and resolution |
 
-## Health checks
+An Alias A record is preferred for the main application because it can point to an AWS load balancer and can be used at the zone apex. A CNAME maps one name to another name and cannot be used at the apex of a Route 53 hosted zone.
 
-Route 53 health checks are important for failover patterns. If the primary target becomes unhealthy, Route 53 can direct traffic to the secondary target. That only works properly when the health check is configured and the TTL is low enough for the change to take effect quickly.
+## Routing policy guide
 
-## CloudFront vs Global Accelerator
+| Policy | Best use |
+| --- | --- |
+| Simple | One resource with no special routing rule |
+| Weighted | Controlled percentages for releases or experiments |
+| Latency | Send users to the Region with the lowest measured latency |
+| Failover | Active and passive disaster recovery with health checks |
+| Geolocation | Route according to the user's geographic location |
+| Geoproximity | Route by resource and user location, with optional traffic bias |
+| Multivalue answer | Return several healthy records for simple DNS-level distribution |
 
-| Service | Best for | Key distinction |
-|---|---|---|
-| CloudFront | Static content, websites, and cached edge delivery | Caches content at edge locations |
-| Global Accelerator | Non-HTTP applications and stable, global IP-based routing | Does not cache; accelerates traffic over the AWS backbone |
+## Decision exercise
+
+| Scenario | Answer |
+| --- | --- |
+| Content changes according to the user's country | Geolocation |
+| A release needs a controlled percentage of traffic | Weighted |
+| Users should reach the Region with the lowest network latency | Latency |
+| A secondary site should be used only after the primary fails | Failover |
+| DNS should return several healthy endpoints | Multivalue answer, or weighted records for fixed shares |
+| One healthy endpoint is sufficient | Simple |
+
+## Canary rollout
+
+| Stage | Production weight | Canary weight | Check before continuing |
+| --- | ---: | ---: | --- |
+| Baseline | 100 | 0 | Confirm production health |
+| Initial test | 90 | 10 | Errors, latency and business transactions |
+| Wider test | 50 | 50 | Compare both versions under load |
+| Release | 0 | 100 | Confirm the new version is stable |
+
+The canary records should use health checks so an unhealthy destination is not returned. Low DNS TTL values allow weight changes to take effect sooner, but cached responses mean the change is not instantaneous.
+
+Geolocation answers the question, "Where is the user?" Geoproximity answers, "Which resource is geographically closest, after applying any configured bias?"
+
+Route 53 cannot replace the ALB. Route 53 chooses a DNS destination, while the ALB makes request-level routing decisions, checks application targets and distributes connections continuously.
+
+CloudFront is the better choice for cacheable HTTP content delivered through edge locations. Global Accelerator is useful when static anycast IP addresses and AWS backbone routing are needed for TCP or UDP applications. It does not provide content caching.
 
 ## Reflection
 
-The most useful part of this day was understanding that DNS routing is really a business-logic layer. It is the place where availability, performance, compliance, and rollout strategy all become visible in the architecture.
+The weighted policy is useful because a release can move gradually instead of changing every user at once. Health checks and TTLs are part of the design because DNS routing depends on both endpoint health and cached answers. I would use failover for a standby Region and weighted records for a planned canary release.
