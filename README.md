@@ -46,20 +46,21 @@ The Python examples require Python 3.10 or later:
 ```powershell
 python week02\hello_fintrust.py
 python week03\python\test_utils.py
+python week03\python\clean_transactions.py
 python week03\python\clean_transactions_v2.py
 python week04\run_smoke_tests.py
 python week06\python\test_week06_audits.py
 python -m unittest week07.tests.test_week07 -v
 ```
 
-Week 4 analysis uses pandas:
+Install all portfolio dependencies from the repository root:
 
 ```powershell
-python -m pip install -r week04\requirements.txt
+python -m pip install -r requirements.txt
 python week04\analyse.py
 ```
 
-Generated SQLite databases, logs, virtual environments, and Python cache files are excluded from version control.
+Generated SQLite databases, temporary logs, virtual environments, and Python cache files are excluded from version control. The Week 3 sample pipeline log is included as required portfolio evidence.
 
 ## Skills demonstrated
 
@@ -72,7 +73,8 @@ Generated SQLite databases, logs, virtual environments, and Python cache files a
 
 - [Week 1 architecture diagrams PDF](week01/diagrams/week01_architecture_diagrams.pdf)
 - [Week 2 architecture diagrams PDF](week02/diagrams/week02_architecture_diagrams.pdf)
-- [Week 3 architecture diagrams PDF](week03/diagrams/week03_architecture_diagrams.pdf)
+- [Week 3 S3 architecture PNG](week03/diagrams/fintrust_s3_architecture.png)
+- [Week 3 S3 architecture PDF](week03/diagrams/fintrust_s3_architecture.pdf)
 - [Week 4 pipeline architecture PDF](week04/diagrams/week04_pipeline_architecture.pdf)
 - [Week 5 VPC architecture PDF](week05/diagrams/week05_vpc_architecture.pdf)
 - [Week 6 architecture diagrams PDF](week06/diagrams/week06_architecture_diagrams.pdf)

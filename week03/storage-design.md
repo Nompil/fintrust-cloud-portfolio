@@ -2,23 +2,20 @@
 
 ## Bucket strategy
 
-| Data | Bucket naming base | Controls | Lifecycle |
+| Bucket | Main use | Controls | Lifecycle |
 | --- | --- | --- | --- |
-| Transaction records | `fintrust-transactions-af-south-1` | Versioning, SSE-KMS, Object Lock compliance mode | Standard, then Standard-IA after 30 days, Glacier Instant Retrieval after 90 days, and Deep Archive after 365 days |
-| Customer statements | `fintrust-statements-af-south-1` | Versioning, SSE-KMS, Block Public Access | Standard, then Standard-IA after 30 days and Glacier Flexible Retrieval after 365 days |
-| Fraud-model data | `fintrust-ml-data-af-south-1` | Versioning, SSE-KMS, bucket-owner-enforced object ownership | Intelligent-Tiering for data with uncertain access patterns |
-| Audit logs | `fintrust-audit-logs-af-south-1` | Dedicated log account, SSE-KMS, Object Lock | Retention follows the approved compliance schedule |
+| `fintrust-transactions-af-south-1` | Active transaction JSON records | Versioning, SSE-KMS and Object Lock in compliance mode for five years | S3 Standard, Standard-IA after 30 days, Glacier Instant Retrieval after 90 days and Glacier Deep Archive after one year |
+| `fintrust-statements-af-south-1` | Monthly customer statements | Versioning, SSE-KMS and Block Public Access | S3 Standard because statements are downloaded on demand through the portal |
+| `fintrust-ml-data-af-south-1` | Fraud-model training data | Versioning, SSE-KMS and Object Lock in governance mode | S3 Standard, then Glacier Flexible Retrieval after 90 days because models are retrained quarterly |
 
-The deployment process appends the AWS account ID to each naming base so that the final bucket name is globally unique. Retention periods and deletion rules require approval from FinTrust's legal and records-management teams.
+Bucket names are globally unique, so an account identifier can be added if one of these names is unavailable.
 
-## Design decisions
+## Object Lock decision
 
-- Keep customer and transaction data in `af-south-1` unless a documented legal decision permits cross-Region replication.
-- Enable versioning before configuring Object Lock. Object Lock can only be used on versioned buckets.
-- Use compliance mode only for records with an approved immutable retention requirement; governance mode permits authorised users to bypass retention.
-- Apply lifecycle rules to current and noncurrent object versions so old versions do not create uncontrolled storage cost.
-- Use S3 Inventory and Storage Lens to confirm that encryption, lifecycle, and retention controls remain effective.
+Transaction records use compliance mode because no user, including the root user, can shorten the retention period or delete a protected object. This suits the five-year financial-record requirement. The machine-learning bucket uses governance mode because an authorised data owner may need to replace unsuitable training data.
 
-## Cost approach
+Versioning must remain enabled on every bucket that uses Object Lock. Lifecycle rules also need separate handling for noncurrent versions so that an overwritten object does not remain in an expensive class indefinitely.
 
-The storage-class choice depends on object size, retrieval frequency, minimum storage duration, and retrieval charges. A cost estimate should use measured data volumes and access patterns.
+## Cost comparison
+
+The course scenario estimates about R24,000 per month if all objects remain in S3 Standard. Applying the lifecycle tiers reduces the steady-state estimate to about R4,200 per month, a saving of R19,800 per month. Most of the saving comes from moving older transaction records into Glacier storage classes instead of paying the S3 Standard rate for the full retention period.

@@ -17,7 +17,11 @@ logging.basicConfig(
     format="%(asctime)s  %(levelname)-8s  %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
-        logging.FileHandler(LOG_DIR / "pipeline.log"),
+        logging.FileHandler(
+            LOG_DIR / "pipeline.log",
+            mode="w",
+            encoding="utf-8",
+        ),
         logging.StreamHandler(),
     ],
 )
@@ -66,10 +70,10 @@ def clean_transaction(row, row_num):
 
 def main():
     logger.info("FinTrust transaction pipeline starting")
-    logger.info("Input: %s", RAW_INPUT)
+    logger.info("Input: data/%s", RAW_INPUT.name)
 
     if not RAW_INPUT.exists():
-        logger.critical("Input file not found: %s", RAW_INPUT)
+        logger.critical("Input file not found: data/%s", RAW_INPUT.name)
         return
 
     transactions = []
@@ -81,6 +85,11 @@ def main():
             validate_headers(reader.fieldnames)
             for row_num, row in enumerate(reader, start=2):
                 try:
+                    if not row.get("Desc", "").strip():
+                        logger.warning(
+                            "Row %d has no description; using the default value",
+                            row_num,
+                        )
                     transaction = clean_transaction(row, row_num)
                     transactions.append(transaction)
                     logger.debug(
@@ -92,10 +101,10 @@ def main():
                     logger.warning("Skipped: %s", error)
                     skipped += 1
     except PermissionError:
-        logger.error("Permission denied reading %s", RAW_INPUT)
+        logger.error("Permission denied reading data/%s", RAW_INPUT.name)
         return
     except UnicodeDecodeError as error:
-        logger.error("Encoding error in %s: %s", RAW_INPUT, error)
+        logger.error("Encoding error in data/%s: %s", RAW_INPUT.name, error)
         return
     except ValueError as error:
         logger.error("Invalid CSV: %s", error)
@@ -116,7 +125,7 @@ def main():
             writer = csv.DictWriter(output_file, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(transactions)
-        logger.info("Clean CSV written: %s", CLEAN_CSV)
+        logger.info("Clean CSV written: data/%s", CLEAN_CSV.name)
     except OSError as error:
         logger.error("Failed to write CSV: %s", error)
         return
@@ -135,7 +144,7 @@ def main():
     try:
         with SUMMARY_JSON.open("w", encoding="utf-8") as summary_file:
             json.dump(summary, summary_file, indent=2)
-        logger.info("Summary JSON written: %s", SUMMARY_JSON)
+        logger.info("Summary JSON written: data/%s", SUMMARY_JSON.name)
         logger.info("Pipeline complete")
     except OSError as error:
         logger.error("Failed to write summary: %s", error)

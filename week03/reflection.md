@@ -1,7 +1,3 @@
 # Week 3 Reflection
 
-This week I moved from small Python exercises to a repeatable data-cleaning process. The script reads inconsistent CSV data, normalises fields, writes a clean CSV and JSON summary, and records processing events through the logging module.
-
-Structured logging and explicit validation made failures easier to trace than print statements alone. Separating reusable functions from the pipeline also made the code easier to test.
-
-On the AWS side, I compared S3 storage classes, lifecycle rules, encryption, Object Lock, and private CloudFront origins. I also added tests for malformed CSV headers and invalid dates so unsuitable input is rejected before an output file is created.
+For FinTrust's compliance archive, I chose a private S3 bucket with SSE-KMS, Glacier Flexible Retrieval and Object Lock in compliance mode for five years because the records must remain immutable but still be recoverable within hours. The hardest Python concept for me was handling a bad CSV row without stopping the rest of the file. Logging the row number and the actual validation error made the problem easier to understand than a general error message. On a real project, I would first add input validation and structured logging because a successful output is not enough if I cannot explain which records were accepted or rejected. I would also keep the CloudFront origin private with OAC so customers cannot bypass the portal controls by using an S3 URL.

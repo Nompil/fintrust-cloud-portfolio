@@ -1,16 +1,17 @@
 # FinTrust S3 Security
 
-FinTrust keeps all S3 buckets private. Access is granted to workload roles, not individual IAM users, and every request is encrypted in transit.
+FinTrust keeps the transaction, statement and machine-learning buckets private. Application roles receive only the actions they need, while the bucket policy enforces rules that apply to every principal.
 
-## Baseline controls
+## Security choices
 
-- Enable all four S3 Block Public Access settings at both account and bucket level.
-- Use bucket-owner-enforced object ownership to disable ACLs.
-- Encrypt sensitive objects with a customer-managed KMS key and restrict the key policy to approved roles.
-- Require TLS through a bucket-policy deny statement.
-- Record data events for sensitive buckets in AWS CloudTrail and centralise logs in the security account.
-- Use short-lived pre-signed URLs only when a customer must download a statement directly.
-- Enable AWS Config rules and Security Hub findings for continuous control checks.
+| Control | FinTrust decision | Reason |
+| --- | --- | --- |
+| Public access | Enable all four Block Public Access settings | Customer and transaction data must not be anonymously accessible |
+| Object ownership | Bucket owner enforced | ACLs are disabled and access is controlled with policies |
+| Encryption | SSE-KMS with a customer-managed key | Key use is recorded and access can be limited to approved roles |
+| Network transport | Deny requests that do not use TLS | Data is protected while travelling to and from S3 |
+| Temporary downloads | Short-lived pre-signed URLs | A customer can download one statement without receiving S3 permissions |
+| Audit trail | CloudTrail data events for sensitive buckets | Object reads and writes can be investigated |
 
 ## TLS-only transport policy
 
@@ -24,8 +25,8 @@ FinTrust keeps all S3 buckets private. Access is granted to workload roles, not 
       "Principal": "*",
       "Action": "s3:*",
       "Resource": [
-        "arn:aws:s3:::fintrust-transactions-af-south-1-*",
-        "arn:aws:s3:::fintrust-transactions-af-south-1-*/*"
+        "arn:aws:s3:::fintrust-transactions-af-south-1",
+        "arn:aws:s3:::fintrust-transactions-af-south-1/*"
       ],
       "Condition": {
         "Bool": {
@@ -37,4 +38,10 @@ FinTrust keeps all S3 buckets private. Access is granted to workload roles, not 
 }
 ```
 
-Application and audit permissions belong in identity policies attached to their respective roles. This keeps the bucket policy focused on guardrails that apply to every principal.
+An application role would receive its normal `s3:GetObject` or `s3:PutObject` permissions through an IAM policy. The explicit deny above still overrides an allow when the request does not use HTTPS.
+
+## Pre-signed URL use case
+
+When a customer requests a monthly statement, the portal checks that the statement belongs to that customer. The backend then creates a pre-signed `GetObject` URL with a short expiry. The link uses the permissions of the signing role, so the role is restricted to the statement prefix and the bucket remains private.
+
+These controls support POPIA by limiting access to personal information, encrypting the records, and keeping an audit trail of object and KMS activity.

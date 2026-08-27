@@ -6,6 +6,7 @@ from fintrust_utils import (
     calculate_simple_interest,
     categorise_transaction,
     format_rand,
+    generate_report_header,
     mask_id_number,
     summarise_transactions,
     validate_account_type,
@@ -44,6 +45,11 @@ class FinTrustUtilsTests(unittest.TestCase):
     def test_transaction_summary(self):
         amounts = [5000, -250, 1200, -800, 3500, -1500]
         self.assertEqual(summarise_transactions(amounts), (9700, -2550, 7150))
+
+    def test_report_header(self):
+        header = generate_report_header("Thabo Nkosi", "ACC-10042")
+        self.assertIn("Thabo Nkosi", header)
+        self.assertIn("ACC-10042", header)
 
     def test_date_normalisation(self):
         self.assertEqual(normalise_date("2026-7-21"), "2026-07-21")

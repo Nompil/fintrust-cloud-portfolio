@@ -12,6 +12,7 @@ build/
 # Generated runtime files
 *.db
 *.log
+!week03/python/logs/pipeline.log
 
 # Local configuration
 .env
