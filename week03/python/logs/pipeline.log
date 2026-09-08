@@ -1,7 +1,7 @@
-2026-08-27 12:34:02  INFO      FinTrust transaction pipeline starting
-2026-08-27 12:34:02  INFO      Input: data/raw_transactions.csv
-2026-08-27 12:34:02  WARNING   Row 5 has no description; using the default value
-2026-08-27 12:34:02  INFO      Processed: 5 rows, skipped: 0
-2026-08-27 12:34:02  INFO      Clean CSV written: data/clean_transactions.csv
-2026-08-27 12:34:02  INFO      Summary JSON written: data/daily_summary.json
-2026-08-27 12:34:02  INFO      Pipeline complete
+2026-09-08 14:14:11  INFO      FinTrust transaction pipeline starting
+2026-09-08 14:14:11  INFO      Input: data/raw_transactions.csv
+2026-09-08 14:14:11  WARNING   Row 5 has no description; using the default value
+2026-09-08 14:14:11  INFO      Processed: 5 rows, skipped: 0
+2026-09-08 14:14:11  INFO      Clean CSV written: data/clean_transactions.csv
+2026-09-08 14:14:11  INFO      Summary JSON written: data/daily_summary.json
+2026-09-08 14:14:11  INFO      Pipeline complete
