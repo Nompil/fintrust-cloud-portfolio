@@ -105,7 +105,18 @@
     "Dischem",
     "Lungelo",
     "Pieter",
-    "timespec"
+    "timespec",
+    "AWSV",
+    "failback",
+    "FTPS",
+    "Geoproximity",
+    "opensearch",
+    "opensearchpy",
+    "parameterisation",
+    "rehost",
+    "replatform",
+    "rescoring",
+    "txns"
   ],
   "ignorePaths": [
     ".git/**",

@@ -12,7 +12,7 @@
 
 This repository records my practical work for the FinTrust Bank case study. It brings together AWS architecture decisions, MySQL and PostgreSQL exercises, Python automation, and a small transaction-data pipeline.
 
-The current repository contains portfolio work from Weeks 1 to 7.
+The current repository contains portfolio work from Weeks 1 to 8.
 
 ## Portfolio map
 
@@ -25,6 +25,7 @@ The current repository contains portfolio work from Weeks 1 to 7.
 | [Week 5](week05/) | AWS networking | VPC design, connectivity, Route 53, and CloudFront |
 | [Week 6](week06/) | Security, identity, observability, and analytics | Highly available architecture, IAM, threat response, PostgreSQL analytics, and boto3 audits |
 | [Week 7](week07/) | Messaging, APIs, Lambda, and infrastructure as code | SQS, SNS, EventBridge, Step Functions, Flask, FastAPI, Lambda, and CloudFormation |
+| [Week 8](week08/) | Analytics and intelligent services | S3 data lake, Glue, Athena, Kinesis, OpenSearch, EMR, QuickSight, SageMaker, Rekognition, and Comprehend |
 
 ## FinTrust scenario
 
@@ -62,6 +63,7 @@ python week04\analyse.py
 python week04\test_week04.py
 python week06\python\test_week06_audits.py
 python -m unittest week07.tests.test_week07 -v
+python -m unittest week08.tests.test_week08 -v
 ```
 
 Generated SQLite databases, temporary logs, virtual environments, and Python cache files are excluded from version control. The Week 3 sample pipeline log is included as required portfolio evidence.
@@ -83,6 +85,7 @@ Generated SQLite databases, temporary logs, virtual environments, and Python cac
 - [Week 5 network architecture](week05/diagrams/fintrust-network-architecture.pdf)
 - [Week 6 security architecture](week06/diagrams/fintrust-security-architecture.pdf)
 - [Week 7 event architecture](week07/diagrams/fintrust-event-architecture.pdf)
+- [Week 8 analytics architecture](week08/diagrams/fintrust-analytics-architecture.pdf)
 
 ## Certification target
 

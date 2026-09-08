@@ -13,6 +13,7 @@ build/
 *.db
 *.log
 !week03/python/logs/pipeline.log
+week08/data/processed/
 
 # Local configuration
 .env
