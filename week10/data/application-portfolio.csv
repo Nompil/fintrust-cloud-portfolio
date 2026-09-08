@@ -1,0 +1,7 @@
+strategy,application_count,portfolio_percent,example,rationale
+Retire,43,15,Legacy reporting tools,QuickSight replaced the capability and owners approved decommissioning
+Retain,28,10,SWIFT and mainframe workloads,Physical dependencies and approval gaps prevent the current migration wave
+Repurchase,14,5,HR and procurement systems,Supported subscription products reduce application maintenance
+Rehost,114,40,Internal middleware and file servers,MGN meets the short timeline without application changes
+Replatform,57,20,Oracle databases and Tomcat applications,RDS and managed runtimes reduce operational work without redesign
+Refactor,29,10,Fraud detection and onboarding,Elastic event driven processing requires a new application design
