@@ -1,6 +1,6 @@
 # FinTrust Database Decisions
 
-These decisions come from the Week 4 Days 1 to 3 FinTrust scenarios.
+These decisions come from the Week 4 FinTrust scenarios.
 
 ## Day 1: RDS PostgreSQL
 
@@ -31,3 +31,9 @@ DynamoDB Global Tables store user session tokens in `af-south-1` and `eu-west-1`
 | Product rates and account summaries cached for 60 seconds | ElastiCache for Redis | It reduces repeated reads against RDS and supports richer data structures than Memcached |
 
 Neptune was deferred because the fraud relationship graph has not been scoped. Keyspaces is not needed because FinTrust has no Cassandra workload. Managed Blockchain is not appropriate for a ledger owned by one organisation, and DAX cannot be used as a cache for RDS.
+
+## Day 4: Redshift and migration
+
+Amazon Redshift stores five years of historical portfolio and risk data for business intelligence queries. Its columnar storage and massively parallel processing architecture suit large OLAP aggregations, while Redshift Spectrum can query older data in S3 without first loading it into the cluster. Customer transactions remain on RDS PostgreSQL because Redshift is not designed for high-frequency OLTP writes.
+
+The FinTrust migration design uses AWS Database Migration Service with a full load followed by Change Data Capture. CDC keeps the target current while the source remains in use and supports cutover after replication catches up. The course scenario describes a homogeneous PostgreSQL migration, so AWS Schema Conversion Tool is not required.

@@ -5,7 +5,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import analyse
 import pipeline
+from fintrust_pipeline import database, loader, reporter
 from python import debug_me, transactions
 
 
@@ -51,6 +53,53 @@ class PipelineTests(unittest.TestCase):
             self.assertIn("BREAKDOWN BY TYPE", report)
             self.assertIn("BREAKDOWN BY STATUS", report)
             self.assertIn("#1  TXN-008", report)
+
+    def test_packaged_pipeline_matches_the_single_file_version(self):
+        valid_rows, invalid_rows = loader.load_csv(pipeline.CSV_FILE)
+        self.assertEqual(len(valid_rows), 8)
+        self.assertEqual(len(invalid_rows), 2)
+
+        with tempfile.TemporaryDirectory(prefix="fintrust-week04-package-") as temporary:
+            temp_dir = Path(temporary)
+            connection = database.setup_database(temp_dir / "test.db")
+            try:
+                self.assertEqual(
+                    database.insert_transactions(connection, valid_rows),
+                    (8, 0),
+                )
+                report = reporter.generate_report(
+                    connection,
+                    temp_dir / "daily_report.txt",
+                )
+            finally:
+                connection.close()
+
+            self.assertIn("Total transactions : 8", report)
+            self.assertIn("Total volume       : ZAR 16,996.49", report)
+
+    def test_pandas_analysis_enriches_all_valid_rows(self):
+        valid_rows, _ = loader.load_csv(pipeline.CSV_FILE)
+        with tempfile.TemporaryDirectory(prefix="fintrust-week04-analysis-") as temporary:
+            temp_dir = Path(temporary)
+            db_path = temp_dir / "test.db"
+            output_path = temp_dir / "transactions_enriched.csv"
+            connection = database.setup_database(db_path)
+            try:
+                database.insert_transactions(connection, valid_rows)
+            finally:
+                connection.close()
+
+            enriched, by_status, by_type = analyse.run_analysis(
+                db_path,
+                output_path,
+            )
+
+            self.assertEqual(len(enriched), 8)
+            self.assertTrue({"high_value", "txn_date"}.issubset(enriched.columns))
+            self.assertEqual(int(enriched["high_value"].sum()), 2)
+            self.assertEqual(int(by_status.loc["COMPLETED", "count"]), 7)
+            self.assertEqual(float(by_type.loc["TRANSFER"]), 15150.74)
+            self.assertTrue(output_path.exists())
 
 
 class ExceptionTests(unittest.TestCase):

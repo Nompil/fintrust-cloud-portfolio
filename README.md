@@ -21,7 +21,7 @@ The current repository contains portfolio work from Weeks 1 to 7.
 | [Week 1](week01/) | Cloud and SQL foundations | AWS infrastructure, EC2, resilience, governance, schema design, and filtering |
 | [Week 2](week02/) | Compute, storage, SQL joins, Python | Compute decisions, JOIN and aggregate queries, transaction rules |
 | [Week 3](week03/) | S3 and Python automation | Storage design, reusable functions, CSV cleaning, JSON reporting, logging |
-| [Week 4](week04/) | Databases and data pipelines | Database selection, custom exceptions, debugging, SQLite loading and reporting |
+| [Week 4](week04/) | Databases and data pipelines | Seven-layer database design, DMS, Python packaging, SQLite ETL and pandas analysis |
 | [Week 5](week05/) | AWS networking | VPC design, connectivity, Route 53, and CloudFront |
 | [Week 6](week06/) | Security, identity, observability, and analytics | Highly available architecture, IAM, threat response, PostgreSQL analytics, and boto3 audits |
 | [Week 7](week07/) | Messaging, APIs, Lambda, and infrastructure as code | SQS, SNS, EventBridge, Step Functions, Flask, FastAPI, Lambda, and CloudFormation |
@@ -41,23 +41,27 @@ The assignment is to design and progressively build a cloud-native transaction i
 
 The Week 1 and Week 2 SQL exercises target MySQL 8. Week 6 uses PostgreSQL for CTE and window-function practice. The course uses a supplied `fintrust` sample database on Week 1 Day 2 and a learner-built `fintrust_db` schema from Day 3 onward. The [Week 1 README](week01/) and [Week 6 README](week06/) give the correct execution order.
 
-The Python examples require Python 3.10 or later:
+The pinned portfolio dependencies require Python 3.11 or later. Create a virtual environment and install them from the repository root:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.txt
+```
+
+Run the key portfolio checks:
 
 ```powershell
 python week02\hello_fintrust.py
 python week03\python\test_utils.py
 python week03\python\clean_transactions.py
 python week03\python\clean_transactions_v2.py
+python week04\pipeline.py
+python week04\main.py
+python week04\analyse.py
 python week04\test_week04.py
 python week06\python\test_week06_audits.py
 python -m unittest week07.tests.test_week07 -v
-```
-
-Install all portfolio dependencies from the repository root:
-
-```powershell
-python -m pip install -r requirements.txt
-python week04\pipeline.py
 ```
 
 Generated SQLite databases, temporary logs, virtual environments, and Python cache files are excluded from version control. The Week 3 sample pipeline log is included as required portfolio evidence.
@@ -66,7 +70,7 @@ Generated SQLite databases, temporary logs, virtual environments, and Python cac
 
 - AWS architecture: Regions, Availability Zones, EC2, Lambda, containers, S3, RDS, VPC, Route 53, CloudFront, IAM, messaging, APIs, and security services
 - SQL: schema design, constraints, filtering, joins, aggregation, CTEs, window functions, and reporting
-- Python: functions, validation, exceptions, logging, CSV/JSON processing, SQLite, boto3, Flask, and FastAPI
+- Python: functions, validation, exceptions, logging, CSV/JSON processing, SQLite, pandas, boto3, Flask, and FastAPI
 - Engineering practice: clear project structure, reproducible run instructions, diagrams, and small validation scripts
 
 ## Architecture diagram packs
