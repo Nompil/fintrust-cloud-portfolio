@@ -1,6 +1,6 @@
 # Week 5 Mock Exam Review
 
-My target for the timed knowledge check was at least 10 out of 15. I used the review to group the networking topics that need more practice instead of memorising isolated service names.
+I used the debrief to group the networking topics that need more practice instead of memorising isolated service names.
 
 ## Answer review
 

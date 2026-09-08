@@ -10,9 +10,9 @@
 | EventBridge and Step Functions | Got it | Event routing explanation and Saga state-machine definition |
 | SWF decision | Partly | I can identify long-running workflows that depend on external workers |
 | API Gateway authorization | Got it | IAM, Cognito, and Lambda Authorizer choices mapped to FinTrust consumers |
-| AppSync | Partly | GraphQL and subscription design completed without a live resolver deployment |
+| AppSync | Partly | I understand GraphQL queries and subscriptions but need more practice choosing resolver data sources |
 | Lambda execution model | Got it | API, SQS, and S3 event inspection plus timeout and environment handling |
-| Lambda VPC networking | Partly | NAT and endpoint decisions documented without a live VPC test |
+| Lambda VPC networking | Partly | I understand the NAT and endpoint options but need more practice tracing routes and Security Groups |
 | CloudFormation | Got it | Two templates cover least privilege, queues, Lambda, and snapshot protection |
 | Microservices and recovery | Got it | Strangler Fig path and workload-specific DR matrix completed |
 
