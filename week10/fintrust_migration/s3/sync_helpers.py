@@ -101,7 +101,7 @@ def monitor_nightly_transfers(
     """Start several tasks together and return their final execution results."""
     client = datasync_client or get_client("datasync")
     executions = [start_task_execution(task_arn, client) for task_arn in task_arns]
-    pending = set(executions)
+    pending = list(executions)
     final: dict[str, dict[str, Any]] = {}
     started = clock()
     while pending:
