@@ -1,3 +1,4 @@
 -r week04/requirements.txt
 -r week06/requirements.txt
 -r week07/requirements.txt
+-r week08/requirements.txt

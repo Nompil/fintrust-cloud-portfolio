@@ -1,0 +1,4 @@
+boto3==1.43.81
+opensearch-py==3.1.0
+pandas==3.0.5
+pyarrow==23.0.1
