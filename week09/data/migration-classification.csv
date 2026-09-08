@@ -1,0 +1,8 @@
+strategy,published_count,unique_estate_count,workload,reason
+Rehost,1847,1847,Standard application servers,MGN provides the quickest move to EC2 without application changes
+Replatform,234,234,Database and application tiers,RDS and ECS reduce infrastructure work with limited application change
+Refactor,365,365,Strategic banking modules,Independent services provide the long term scaling and deployment model
+Repurchase,12,12,Legacy customer relationship system,A managed subscription replaces the existing application and its servers
+Retire,312,300,Obsolete reporting and batch servers,The published Retire figure includes the 12 servers replaced through Repurchase
+Retain,89,89,Mainframe and hardware security dependencies,The systems remain on premises until compliance and hardware dependencies change
+Relocate,0,0,VMware estate,FinTrust has no approved VMware Cloud contract in the supplied scenario
