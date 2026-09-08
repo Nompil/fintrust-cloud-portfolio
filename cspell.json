@@ -116,7 +116,12 @@
     "rehost",
     "replatform",
     "rescoring",
-    "txns"
+    "txns",
+    "finops",
+    "ondemand",
+    "Snowcone",
+    "Unblended",
+    "workstreams"
   ],
   "ignorePaths": [
     ".git/**",
