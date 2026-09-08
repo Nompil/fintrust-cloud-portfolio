@@ -4,7 +4,7 @@ Week 7 extends FinTrust with an event-driven payment path, production API decisi
 
 ## Architecture
 
-- [Week 7 architecture diagram pack](diagrams/week07_architecture_diagrams.pdf)
+- [FinTrust event architecture](diagrams/fintrust-event-architecture.pdf)
 
 ## Application code
 
@@ -57,7 +57,7 @@ The event template creates an encrypted FIFO queue, FIFO dead-letter queue, encr
 - [Mock exam review](mock-exam-review.md)
 - [Self-assessment](self-assessment.md)
 - [Week 7 reflection](reflection.md)
-- [Portfolio evidence checklist](evidence/portfolio-checklist.md)
+- [Portfolio evidence](evidence/portfolio-evidence.md)
 - [Validation record](evidence/validation.md)
 
 ## Run locally

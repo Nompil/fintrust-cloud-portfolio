@@ -14,4 +14,4 @@ The choice follows the workload rather than a preferred service. Fargate suits l
 
 ## Workload decision path
 
-The workload decision path is shown in the [Week 2 architecture diagrams PDF](diagrams/week02_architecture_diagrams.pdf).
+The workload decision path is shown in the [FinTrust compute and storage diagrams](diagrams/fintrust-compute-and-storage.pdf).

@@ -16,7 +16,7 @@ Week 5 brings the FinTrust network together across two Availability Zones. The w
 
 | File | Purpose |
 | --- | --- |
-| [Week 5 network architecture](diagrams/week05_vpc_architecture.pdf) | Detailed two-AZ design and network controls |
+| [FinTrust network architecture](diagrams/fintrust-network-architecture.pdf) | Detailed two-AZ design and network controls |
 | [Weekly reflection](reflection.md) | Main lessons and design decisions |
 
 ## Design summary

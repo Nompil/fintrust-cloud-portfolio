@@ -4,7 +4,7 @@ Week 6 combines highly available architecture, advanced IAM, preventive and dete
 
 ## Architecture and security decisions
 
-- [Week 6 architecture diagram pack](diagrams/week06_architecture_diagrams.pdf)
+- [FinTrust security architecture](diagrams/fintrust-security-architecture.pdf)
 - [IAM design decision](notes/iam-design.md)
 - [Security services configuration](notes/security-services.md)
 - [Incident response and audit design](notes/incident-response.md)

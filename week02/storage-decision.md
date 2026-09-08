@@ -12,7 +12,7 @@
 
 ## Architecture
 
-The storage layout is shown in the [Week 2 architecture diagrams PDF](diagrams/week02_architecture_diagrams.pdf).
+The storage layout is shown in the [FinTrust compute and storage diagrams](diagrams/fintrust-compute-and-storage.pdf).
 
 ## gp3 and io2 cost decision
 

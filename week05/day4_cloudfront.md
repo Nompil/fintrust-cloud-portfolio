@@ -48,7 +48,7 @@ If `/styles/main.css` changes and the existing cached object must be replaced im
 
 The complete design includes Route 53, CloudFront, a private S3 origin using OAC, an ALB in two public subnets, ECS tasks in two private application subnets, and RDS, ElastiCache and DocumentDB in private data subnets. Each Availability Zone has its own NAT Gateway. Gateway endpoints provide private routes to S3 and DynamoDB. The Security Group chain is `alb-sg` to `app-sg` to `db-sg`. Global Accelerator is shown as an alternative entry path for applications that need static anycast IP addresses rather than caching.
 
-[Open the detailed Week 5 network architecture](diagrams/week05_vpc_architecture.pdf)
+[Open the detailed FinTrust network architecture](diagrams/fintrust-network-architecture.pdf)
 
 ## Reflection
 

@@ -6,11 +6,11 @@ Week 2 applies workload characteristics to AWS compute and storage choices while
 
 ### AWS architecture
 
-- [Week 2 architecture diagrams PDF](diagrams/week02_architecture_diagrams.pdf)
+- [FinTrust compute and storage diagrams](diagrams/fintrust-compute-and-storage.pdf)
 - [Day 1 container architecture](container-architecture.md)
 - [Day 2 Lambda design](lambda-design.md)
 - [Day 2 compute decision map](compute-decision-map.md)
-- Compute architecture in the [Week 2 architecture diagrams PDF](diagrams/week02_architecture_diagrams.pdf)
+- Compute architecture in the [FinTrust compute and storage diagrams](diagrams/fintrust-compute-and-storage.pdf)
 - [EBS storage decision](storage-decision.md)
 - [Shared-storage decision](shared-storage-decision.md)
 - [Week 2 compute notes and transaction flow diagram](architecture/week02_compute_notes.md)

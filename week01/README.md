@@ -20,14 +20,14 @@ Week 1 introduced the FinTrust case study, AWS global infrastructure, EC2 worklo
 
 ## Deliverables
 
-- [Week 1 architecture diagrams PDF](diagrams/week01_architecture_diagrams.pdf)
+- [FinTrust foundations diagrams](diagrams/fintrust-foundations.pdf)
 - [Day 1 reflection](notes/day1_reflection.md)
 - [AWS Region decision](notes/region_decision.md)
 - [EC2 compute decisions](notes/ec2-compute-decisions.md)
 - [Resilience and disaster recovery](notes/resilience-and-dr-plan.md)
 - [Multi-account governance](notes/multi-account-governance.md)
 - [FinTrust data model](notes/fintrust_data_model.md)
-- Entity-relationship diagram in the [Week 1 architecture diagrams PDF](diagrams/week01_architecture_diagrams.pdf)
+- Entity-relationship diagram in the [FinTrust foundations diagrams](diagrams/fintrust-foundations.pdf)
 - [Day 2 sample database](sql/day2_fintrust_sample_data.sql)
 - [Database schema and sample data](sql/day3_fintrust_schema.sql)
 - [Branches stretch challenge](sql/day3_challenge_branches.sql)

@@ -12,7 +12,7 @@
 | Concurrency | 10 provisioned execution environments |
 | Region | `af-south-1` |
 
-The event flow is shown in the [Week 2 architecture diagrams PDF](diagrams/week02_architecture_diagrams.pdf).
+The event flow is shown in the [FinTrust compute and storage diagrams](diagrams/fintrust-compute-and-storage.pdf).
 
 ## Cold-start strategy
 

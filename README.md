@@ -73,16 +73,16 @@ Generated SQLite databases, temporary logs, virtual environments, and Python cac
 - Python: functions, validation, exceptions, logging, CSV/JSON processing, SQLite, pandas, boto3, Flask, and FastAPI
 - Engineering practice: clear project structure, reproducible run instructions, diagrams, and small validation scripts
 
-## Architecture diagram packs
+## Architecture diagrams
 
-- [Week 1 architecture diagrams PDF](week01/diagrams/week01_architecture_diagrams.pdf)
-- [Week 2 architecture diagrams PDF](week02/diagrams/week02_architecture_diagrams.pdf)
+- [Week 1 FinTrust foundations](week01/diagrams/fintrust-foundations.pdf)
+- [Week 2 compute and storage](week02/diagrams/fintrust-compute-and-storage.pdf)
 - [Week 3 S3 architecture PNG](week03/diagrams/fintrust_s3_architecture.png)
 - [Week 3 S3 architecture PDF](week03/diagrams/fintrust_s3_architecture.pdf)
-- [Week 4 database architecture PDF](week04/diagrams/fintrust_database_architecture.pdf)
-- [Week 5 VPC architecture PDF](week05/diagrams/week05_vpc_architecture.pdf)
-- [Week 6 architecture diagrams PDF](week06/diagrams/week06_architecture_diagrams.pdf)
-- [Week 7 architecture diagrams PDF](week07/diagrams/week07_architecture_diagrams.pdf)
+- [Week 4 database architecture](week04/diagrams/fintrust-database-architecture.pdf)
+- [Week 5 network architecture](week05/diagrams/fintrust-network-architecture.pdf)
+- [Week 6 security architecture](week06/diagrams/fintrust-security-architecture.pdf)
+- [Week 7 event architecture](week07/diagrams/fintrust-event-architecture.pdf)
 
 ## Certification target
 

@@ -13,7 +13,7 @@ The Transaction API should keep at least two healthy tasks distributed across tw
 
 ## Architecture
 
-The container design is shown in the [Week 2 architecture diagrams PDF](diagrams/week02_architecture_diagrams.pdf).
+The container design is shown in the [FinTrust compute and storage diagrams](diagrams/fintrust-compute-and-storage.pdf).
 
 Container images are stored in Amazon ECR in `af-south-1`. ECS deploys those images as stateless Fargate tasks. Application state is kept outside the containers so either task can serve any request and failed tasks can be replaced safely.
 

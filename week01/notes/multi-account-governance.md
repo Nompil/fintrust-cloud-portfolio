@@ -4,7 +4,7 @@ FinTrust uses AWS Organizations and AWS Control Tower to separate production, se
 
 ## Account structure
 
-The account hierarchy is shown in the [Week 1 architecture diagrams PDF](../diagrams/week01_architecture_diagrams.pdf).
+The account hierarchy is shown in the [FinTrust foundations diagrams](../diagrams/fintrust-foundations.pdf).
 
 | OU/account | Purpose | Main control |
 | --- | --- | --- |

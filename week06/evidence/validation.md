@@ -32,4 +32,4 @@ The four SQL files were executed in order against PostgreSQL 16 with `ON_ERROR_S
 
 | File | Pages | Result |
 | --- | ---: | --- |
-| `diagrams/week06_architecture_diagrams.pdf` | 5 | Valid PDF |
+| `diagrams/fintrust-security-architecture.pdf` | 5 | Valid PDF |

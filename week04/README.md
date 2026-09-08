@@ -7,7 +7,7 @@ This folder contains the Week 4 portfolio work for AWS database selection, Pytho
 | File | Evidence |
 | --- | --- |
 | [Seven-layer database design](db-architecture-diagram.md) | Required service, Region and selection reason for all seven database layers, plus the DMS migration path |
-| [Database architecture PDF](diagrams/fintrust_database_architecture.pdf) | Detailed visual version of the seven-layer design |
+| [Database architecture PDF](diagrams/fintrust-database-architecture.pdf) | Detailed visual version of the seven-layer design |
 | [Database decisions](database-decisions.md) | RDS, Aurora, DynamoDB, purpose-built databases, Redshift and DMS choices |
 | [Custom exceptions](python/transactions.py) | Banking exception hierarchy and transaction validation |
 | [Debugging exercise](python/debug_me.py) | Corrected payment processor with all five lab bugs fixed |

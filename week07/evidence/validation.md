@@ -34,4 +34,4 @@ Nine tests completed with no failures.
 
 | File | Pages | Result |
 | --- | ---: | --- |
-| `diagrams/week07_architecture_diagrams.pdf` | 5 | Valid PDF |
+| `diagrams/fintrust-event-architecture.pdf` | 5 | Valid PDF |

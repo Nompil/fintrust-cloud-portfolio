@@ -30,6 +30,6 @@ This is the clearest way to think about the design: each storage type solves a d
 
 ## Shared storage architecture
 
-The shared storage layout is shown in the [Week 2 architecture diagrams PDF](diagrams/week02_architecture_diagrams.pdf).
+The shared storage layout is shown in the [FinTrust compute and storage diagrams](diagrams/fintrust-compute-and-storage.pdf).
 
 EFS serves the Linux-based Lambda and ECS workloads through NFS. FSx for Windows supplies SMB shares and Active Directory permissions. FSx for Lustre supplies the parallel throughput needed for model training and can exchange data with S3.

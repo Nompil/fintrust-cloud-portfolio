@@ -13,7 +13,7 @@ FinTrust combines Multi-AZ compute, load balancing, asynchronous messaging, and 
 
 ## Resilience architecture
 
-The complete resilience flow is shown in the [Week 1 architecture diagrams PDF](../diagrams/week01_architecture_diagrams.pdf).
+The complete resilience flow is shown in the [FinTrust foundations diagrams](../diagrams/fintrust-foundations.pdf).
 
 The Application Load Balancer sends traffic only to healthy instances in the Auto Scaling group. RDS maintains a standby database in another Availability Zone. SQS prevents a slow fraud-scoring consumer from blocking transaction submission. SNS publishes each completed event to independent queues so notification, audit, and analytics consumers can retry and scale separately. The Pilot Light environment is activated only when a regional recovery is approved.
 
