@@ -19,10 +19,19 @@ from .s3.sync_helpers import (
 )
 from .utils.sessions import get_client, get_cross_account_session, get_resource, get_session
 from .utils.transfer_costs import compare_transfer_costs
+from .cost_reporting import (
+    get_monthly_spend_by_service,
+    get_per_account_spend,
+    upload_report_files,
+    write_csv_report,
+    write_html_report,
+)
 
 __all__ = [
     "classify_instances",
     "compare_transfer_costs",
+    "get_monthly_spend_by_service",
+    "get_per_account_spend",
     "get_cdc_latency",
     "get_client",
     "get_cross_account_session",
@@ -38,6 +47,9 @@ __all__ = [
     "start_task",
     "start_task_execution",
     "stop_task",
+    "upload_report_files",
     "wait_for_execution",
     "wait_for_status",
+    "write_csv_report",
+    "write_html_report",
 ]
