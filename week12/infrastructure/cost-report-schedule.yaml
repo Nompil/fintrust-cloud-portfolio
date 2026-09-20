@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Schedule the FinTrust monthly cost-report Lambda on the first Monday at 08:00 SAST.
+
+Parameters:
+  CostReportFunctionArn:
+    Type: String
+    Description: ARN of the deployed fintrust-cost-report Lambda function.
+
+Resources:
+  MonthlyCostReportSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: First Monday at 08:00 SAST, expressed as 06:00 UTC.
+      ScheduleExpression: cron(0 6 ? * 2#1 *)
+      State: ENABLED
+      Targets:
+        - Arn: !Ref CostReportFunctionArn
+          Id: CostReportLambda
+
+  AllowEventBridgeToInvokeCostReport:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CostReportFunctionArn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt MonthlyCostReportSchedule.Arn
+
+Outputs:
+  ScheduleName:
+    Value: !Ref MonthlyCostReportSchedule
+    Description: Name of the EventBridge schedule rule.

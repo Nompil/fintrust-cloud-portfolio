@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyChangesToOrganisationAuditControls",
+      "Effect": "Deny",
+      "Action": [
+        "cloudtrail:DeleteTrail",
+        "cloudtrail:StopLogging",
+        "guardduty:DeleteDetector"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
