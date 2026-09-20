@@ -14,6 +14,8 @@ This repository records my practical work for the FinTrust Bank case study. It b
 
 The current repository contains portfolio work from Weeks 1 to 12.
 
+For the move into the final project, see the [FinTrust portfolio and capstone plan](portfolio-and-capstone-plan.md). It separates the work already documented in the repository from the AWS Console build, evidence, and presentation work still required.
+
 ## Portfolio map
 
 | Week | Focus | Highlights |
