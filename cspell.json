@@ -122,7 +122,10 @@
     "Snowcone",
     "Unblended",
     "workstreams",
-    "lookback"
+    "lookback",
+    "NTILE",
+    "quartiled",
+    "speedup"
   ],
   "ignorePaths": [
     ".git/**",

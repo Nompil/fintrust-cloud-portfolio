@@ -1,0 +1,7 @@
+# Week 11 Reflection
+
+The pillar I had to slow down for was Operational Excellence versus Reliability. Both can mention CloudWatch, automation and failure, so it is easy to group them together. The rule that helped was to ask what the question wants to improve. If it is about the way the team deploys, documents or learns from an incident, I treat it as Operational Excellence. If it is about the workload continuing through an instance or Availability Zone failure, I treat it as Reliability.
+
+I can now break the transaction analysis into stages instead of trying to write one large query. The monthly total has to exist before `LAG` can compare it with the prior month, and the percentage calculation needs a zero check. The CTE names made the query easier to read than nested brackets. For the top-three report, the important choice was whether the report needs exactly three rows or whether equal amounts should share a rank.
+
+The Week 4 pipeline is where I would apply these Python ideas first. A retry wrapper would be useful around a transient S3 metadata or upload call, while a small thread pool could collect metadata for several input files at once. I would not use a thread pool for writing the same SQLite database from multiple workers because that could create locking problems. The next step is to measure the sequential and concurrent versions with the same input before deciding whether the extra complexity is worthwhile.

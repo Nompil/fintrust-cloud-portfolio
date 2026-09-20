@@ -12,7 +12,7 @@
 
 This repository records my practical work for the FinTrust Bank case study. It brings together AWS architecture decisions, MySQL and PostgreSQL exercises, Python automation, and a small transaction-data pipeline.
 
-The current repository contains portfolio work from Weeks 1 to 10.
+The current repository contains portfolio work from Weeks 1 to 11.
 
 ## Portfolio map
 
@@ -28,6 +28,7 @@ The current repository contains portfolio work from Weeks 1 to 10.
 | [Week 8](week08/) | Analytics and intelligent services | S3 data lake, Glue, Athena, Kinesis, OpenSearch, EMR, QuickSight, SageMaker, Rekognition, and Comprehend |
 | [Week 9](week09/) | Cost control and migration planning | Pricing, TCO, FinOps reporting, tag governance, the Seven Rs, DMS, Snow and recovery planning |
 | [Week 10](week10/) | Migration execution | Six strategy classification, MGN, DMS, DataSync, transfer costs, packaged Python and SQL reporting views |
+| [Week 11](week11/) | Well-Architected review and data skills | Six-pillar mapping, PostgreSQL windows and CTEs, retry logic, and concurrent S3 metadata collection |
 
 ## FinTrust scenario
 
@@ -68,6 +69,7 @@ python -m unittest week07.tests.test_week07 -v
 python -m unittest week08.tests.test_week08 -v
 python -m unittest week09.tests.test_week09 -v
 python -m unittest week10.tests.test_week10 -v
+python -m unittest week11.tests.test_week11 -v
 ```
 
 Generated SQLite databases, temporary logs, virtual environments, and Python cache files are excluded from version control. The Week 3 sample pipeline log is included as required portfolio evidence.
@@ -76,7 +78,7 @@ Generated SQLite databases, temporary logs, virtual environments, and Python cac
 
 - AWS architecture: Regions, Availability Zones, EC2, Lambda, containers, S3, RDS, VPC, Route 53, CloudFront, IAM, messaging, APIs, and security services
 - SQL: schema design, constraints, filtering, joins, aggregation, CTEs, window functions, and reporting
-- Python: functions, validation, exceptions, logging, CSV/JSON processing, SQLite, pandas, boto3, Flask, and FastAPI
+- Python: functions, validation, exceptions, logging, decorators, concurrency, CSV/JSON processing, SQLite, pandas, boto3, Flask, and FastAPI
 - Engineering practice: clear project structure, reproducible run instructions, diagrams, and small validation scripts
 
 ## Architecture diagrams
@@ -92,6 +94,7 @@ Generated SQLite databases, temporary logs, virtual environments, and Python cac
 - [Week 8 analytics architecture](week08/diagrams/fintrust-analytics-architecture.pdf)
 - [Week 9 cost and migration architecture](week09/diagrams/fintrust-cost-and-migration-architecture.pdf)
 - [Week 10 migration execution architecture](week10/diagrams/fintrust-migration-execution-architecture.pdf)
+- [Week 11 Well-Architected pillar mapping](week11/diagrams/fintrust-waf-pillar-mapping.pdf)
 
 ## Certification target
 
