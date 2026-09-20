@@ -125,7 +125,9 @@
     "lookback",
     "NTILE",
     "quartiled",
-    "speedup"
+    "speedup",
+    "checkpointed",
+    "extrasaction"
   ],
   "ignorePaths": [
     ".git/**",
